@@ -27,3 +27,28 @@ resource "local_file" "kubespray_inventory" {
  )
  filename = "${path.root}/../kubespray/inventory/zelos/inventory.ini"
 }
+
+resource "local_file" "ssh_config" {
+  depends_on = [
+    module.oracle_instance_jakob.public_ip,
+    module.oracle_instance_fabian.public_ip,
+    module.oracle_instance_tanja.public_ip
+  ]
+  content = templatefile("${path.module}/templates/config.tpl",
+  {
+    node-ip = [
+        module.oracle_instance_jakob.public_ip,
+        module.oracle_instance_fabian.public_ip,
+        module.oracle_instance_tanja.public_ip
+    ]
+    node-id = [
+        "zelos-jakob",
+        "zelos-fabian",
+        "zelos-tanja"
+    ],
+    node-user = "ubuntu",
+    node-key = "${abspath(path.root)}/../.ssh/automation.openssh.pem"
+  }
+ )
+ filename = "${path.root}/../.ssh/config"
+}
