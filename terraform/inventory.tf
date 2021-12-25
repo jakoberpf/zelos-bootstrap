@@ -1,0 +1,29 @@
+resource "local_file" "kubespray_inventory" {
+  depends_on = [
+    module.oracle_instance_jakob.public_ip,
+    module.oracle_instance_fabian.public_ip,
+    module.oracle_instance_tanja.public_ip
+  ]
+  content = templatefile("${path.module}/templates/inventory.tpl",
+  {
+    masters-ip = [
+        module.oracle_instance_jakob.public_ip,
+        module.oracle_instance_fabian.public_ip,
+        module.oracle_instance_tanja.public_ip
+    ]
+    masters-id = [
+        "master-jakob",
+        "master-fabian",
+        "master-tanja"
+    ],
+    masters-user = "ubuntu",
+    workers-ip = []
+    workers-id = [],
+    workers-user = "ubuntu",
+    bastion-ip = ""
+    bastion-id = "",
+    bastion-user = "ubuntu",
+  }
+ )
+ filename = "${path.root}/../kubespray/inventory/zelos/inventory.ini"
+}
