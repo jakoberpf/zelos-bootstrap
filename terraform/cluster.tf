@@ -10,6 +10,7 @@ module "oracle_instance_jakob" {
   compartment_id = var.jakob_compartment_ocid
   route_table_id = var.jakob_route_table_id
   cidr_block = "192.168.65.0/24"
+  ssh_authorized_keys = var.authorized_keys
   instance_ocpus = 3
   instance_memory = 22
 }
@@ -26,6 +27,7 @@ module "oracle_instance_fabian" {
   compartment_id = var.fabian_compartment_ocid
   route_table_id = var.fabian_route_table_id
   cidr_block = "192.168.65.0/24"
+  ssh_authorized_keys = var.authorized_keys
 }
 
 module "oracle_instance_tanja" {
@@ -40,4 +42,5 @@ module "oracle_instance_tanja" {
   compartment_id = var.tanja_compartment_ocid
   route_table_id = var.tanja_route_table_id
   cidr_block = "192.168.65.0/24"
+  ssh_authorized_keys = var.authorized_keys
 }

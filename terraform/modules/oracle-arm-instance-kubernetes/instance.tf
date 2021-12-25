@@ -26,11 +26,11 @@ resource "oci_core_instance" "oaik_0" {
   }
 
   metadata = {
-    ssh_authorized_keys = file("~/.ssh/id_rsa.pub")
+    ssh_authorized_keys = var.ssh_authorized_keys
     user_data = base64encode(templatefile("${path.module}/templates/node.yaml.tpl",
       {
-        zerotier_network_id  = "",
-    }
+        dummy  = "",
+      }
     ))
   }
 }

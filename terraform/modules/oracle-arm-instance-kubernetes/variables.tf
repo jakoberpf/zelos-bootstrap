@@ -42,4 +42,6 @@ variable "cidr_block" {
   type    = string
 }
 
-
+variable "ssh_authorized_keys" {
+  type    = string
+}

@@ -26,6 +26,9 @@ variable "instance_shape" {
 variable "region" {
   type = string
 }
+variable "authorized_keys" {
+  type = string
+}
 
 ## jakoberpf
 variable "jakob_tenancy_ocid" {
