@@ -45,11 +45,3 @@ variable "cidr_block" {
 variable "ssh_authorized_keys" {
   type    = string
 }
-
-resource "random_string" "deployment_id" {
-  length  = 5
-  upper   = false
-  lower   = true
-  number  = true
-  special = false
-}
