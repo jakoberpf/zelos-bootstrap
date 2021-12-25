@@ -16,7 +16,7 @@ resource "oci_core_network_security_group_security_rule" "oaik_etcd" {
   tcp_options {
     destination_port_range {
       min = 2379
-      max = 2379
+      max = 2380
     }
   }
 }

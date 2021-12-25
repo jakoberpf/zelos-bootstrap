@@ -23,7 +23,7 @@ resource "oci_core_security_list" "oaik" {
 
     tcp_options {
       min = 2379
-      max = 2379
+      max = 2380
     }
   }
 
