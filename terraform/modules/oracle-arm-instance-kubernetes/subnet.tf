@@ -1,7 +1,7 @@
 resource "oci_core_subnet" "oaik" {
   availability_domain        = var.availability_domain
   cidr_block                 = var.cidr_block
-  display_name               = "${var.clustername}-subnet"
+  display_name               = "${var.clustername}-subnet-${random_string.deployment_id.result}"
   prohibit_public_ip_on_vnic = false
   dns_label                  = var.clustername
   compartment_id             = var.compartment_id

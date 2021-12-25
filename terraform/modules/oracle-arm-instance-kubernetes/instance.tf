@@ -1,7 +1,7 @@
 resource "oci_core_instance" "oaik_0" {
   compartment_id      = var.compartment_id
   availability_domain = var.availability_domain
-  display_name        = "${var.clustername}-node"
+  display_name        = "${var.clustername}-node-${random_string.deployment_id.result}"
   shape               = var.instance_shape
 
   shape_config {
@@ -18,7 +18,7 @@ resource "oci_core_instance" "oaik_0" {
   create_vnic_details {
     subnet_id        = oci_core_subnet.oaik.id
     assign_public_ip = true
-    hostname_label   = "${var.clustername}-node"
+    hostname_label   = "${var.clustername}-node${random_string.deployment_id.result}"
     nsg_ids = [
       oci_core_network_security_group.oaik_kube.id,
       oci_core_network_security_group.oaik_etcd.id,

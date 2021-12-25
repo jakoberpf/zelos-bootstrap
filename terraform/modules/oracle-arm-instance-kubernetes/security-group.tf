@@ -1,7 +1,7 @@
 resource "oci_core_network_security_group" "oaik_kube" {
   compartment_id = var.compartment_id
   vcn_id         = var.vcn_id
-  display_name   = "${var.clustername}-etcd-security-group"
+  display_name   = "${var.clustername}-etcd-security-group-${random_string.deployment_id.result}"
 }
 
 resource "oci_core_network_security_group_security_rule" "oaik_kube" {
@@ -24,7 +24,7 @@ resource "oci_core_network_security_group_security_rule" "oaik_kube" {
 resource "oci_core_network_security_group" "oaik_etcd" {
   compartment_id = var.compartment_id
   vcn_id         = var.vcn_id
-  display_name   = "${var.clustername}-etcd-security-group"
+  display_name   = "${var.clustername}-etcd-security-group-${random_string.deployment_id.result}"
 }
 
 resource "oci_core_network_security_group_security_rule" "oaik_etcd" {
