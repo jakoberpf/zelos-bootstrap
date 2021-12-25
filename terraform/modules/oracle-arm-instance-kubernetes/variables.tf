@@ -3,6 +3,21 @@ variable "clustername" {
   default = "oracle"
 }
 
+variable "instance_shape" {
+  type    = string
+  default = "VM.Standard.A1.Flex"
+}
+
+variable "instance_memory" {
+  type    = number
+  default = 24
+}
+
+variable "instance_ocpus" {
+  type    = string
+  default = 4
+}
+
 variable "vcn_id" {
   type    = string
 }
