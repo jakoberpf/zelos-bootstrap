@@ -14,6 +14,7 @@ runcmd:
   - iptables -I INPUT 2 -p tcp --dport 2380 -j ACCEPT
   - iptables -I INPUT 2 -p tcp --dport 6443 -j ACCEPT
   - iptables -I INPUT 2 -p tcp --dport 9254 -j ACCEPT
+  - iptables -I INPUT 2 -p tcp --dport 10250 -j ACCEPT
   # - iptables -P INPUT ACCEPT
   # - iptables -P OUTPUT ACCEPT
   # - iptables -P FORWARD ACCEPT
