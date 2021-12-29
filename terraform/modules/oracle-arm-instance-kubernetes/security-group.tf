@@ -1,3 +1,26 @@
+resource "oci_core_network_security_group" "oaik_https" {
+  compartment_id = var.compartment_id
+  vcn_id         = var.vcn_id
+  display_name   = "${var.cluster_name}-https-security-group-${random_string.deployment_id.result}"
+}
+
+resource "oci_core_network_security_group_security_rule" "oaik_https" {
+  network_security_group_id = oci_core_network_security_group.oaik_https.id
+
+  description = "HTTPS"
+  direction   = "INGRESS"
+  protocol    = 6
+  source_type = "CIDR_BLOCK"
+  source      = "0.0.0.0/0"
+
+  tcp_options {
+    destination_port_range {
+      min = 443
+      max = 443
+    }
+  }
+}
+
 resource "oci_core_network_security_group" "oaik_etcd" {
   compartment_id = var.compartment_id
   vcn_id         = var.vcn_id
