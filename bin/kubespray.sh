@@ -13,7 +13,7 @@ cd $GIT_ROOT
 # Run kubespray deployment
 docker run --rm -it \
   --mount type=bind,source="$GIT_ROOT"/kubespray/inventory/zelos,dst=/inventory \
-  --mount type=bind,source="$GIT_ROOT"/.ssh/automation.openssh.pem,dst=/root/.ssh/id_rsa \
+  --mount type=bind,source="$GIT_ROOT"/.ssh/automation,dst=/root/.ssh/id_rsa \
   quay.io/kubespray/kubespray:v2.17.1 bash -c "ansible-playbook -i /inventory/inventory.ini -b --private-key /root/.ssh/id_rsa cluster.yml"
 
 # Push kubernetes admin config to vault
