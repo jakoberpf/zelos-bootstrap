@@ -41,8 +41,8 @@ resource "oci_core_security_list" "oaik" {
     protocol = "17"
     source   = "0.0.0.0/0"
     udp_options {
-      min = "9993"
-      max = "9993"
+      min = 9993
+      max = 9993
     }
   }
 }

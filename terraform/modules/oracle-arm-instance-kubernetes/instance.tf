@@ -21,7 +21,6 @@ resource "oci_core_instance" "oaik_0" {
     hostname_label   = "${var.cluster_name}-${var.cluster_compartment}-node-${random_string.deployment_id.result}"
     nsg_ids = [
       oci_core_network_security_group.oaik_kube.id,
-      oci_core_network_security_group.oaik_etcd.id,
       oci_core_network_security_group.oaik_zerotier.id
     ]
   }
