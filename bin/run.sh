@@ -7,8 +7,17 @@ cd $GIT_ROOT
 
 # Run terraform apply
 cd $GIT_ROOT/terraform
+terraform init -upgrade
 terraform apply -var-file="variables.tfvars"
 cd $GIT_ROOT
+
+# https://serverfault.com/questions/532559/bash-script-count-down-5-minutes-display-on-single-line
+# secs=$((2 * 60))
+# while [ $secs -gt 0 ]; do
+#    echo -ne "$secs\033[0K\r"
+#    sleep 1
+#    : $((secs--))
+# done
 
 # Run kubespray deployment
 docker run --rm -it \
