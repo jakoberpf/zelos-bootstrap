@@ -6,10 +6,20 @@ resource "local_file" "kubespray_inventory" {
   ]
   content = templatefile("${path.module}/templates/inventory.tpl",
   {
-    masters-ip = [
+    masters-ip-public = [
         module.oracle_instance_jakob.public_ip,
         module.oracle_instance_fabian.public_ip,
         module.oracle_instance_tanja.public_ip
+    ]
+    masters-ip-zt-internal = [
+        module.oracle_instance_jakob.zt_internal_ip,
+        module.oracle_instance_fabian.zt_internal_ip,
+        module.oracle_instance_tanja.zt_internal_ip
+    ]
+    masters-ip-zt-external = [
+        module.oracle_instance_jakob.zt_external_ip,
+        module.oracle_instance_fabian.zt_external_ip,
+        module.oracle_instance_tanja.zt_external_ip
     ]
     masters-id = [
         "master-jakob",
