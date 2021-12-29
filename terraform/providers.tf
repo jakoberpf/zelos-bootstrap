@@ -16,6 +16,10 @@ terraform {
         oci.tanja
       ]
     }
+    zerotier = {
+      source = "zerotier/zerotier"
+      version = "1.2.0"
+    }
   }
 }
 
@@ -72,3 +76,7 @@ provider "oci" {
 #   private_key_path = var.tanja_private_key_path
 #   region           = var.region
 # }
+
+provider "zerotier" {
+  zerotier_central_token = var.zerotier_central_token
+}
