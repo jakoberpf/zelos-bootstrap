@@ -1,7 +1,11 @@
 terraform {
   required_providers {
-    aws = {
-      source = "hashicorp/aws"
+    oci = {
+      source = "hashicorp/oci"
+    }
+    zerotier = {
+      source = "zerotier/zerotier"
+      version = "1.2.0"
     }
   }
 }

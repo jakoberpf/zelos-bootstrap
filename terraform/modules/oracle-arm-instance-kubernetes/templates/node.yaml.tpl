@@ -16,4 +16,18 @@ runcmd:
   # Setup Zerotier
   - curl -o zerotier-install.sh https://raw.githubusercontent.com/jakoberpf/zerotier-scripts/main/zerotier-installer.sh
   - chmod +x zerotier-install.sh
-  - ./zerotier-install.sh
+  - ./zerotier-install.sh && rm ./zerotier-install.sh
+  - curl -o zerotier-join.sh https://raw.githubusercontent.com/jakoberpf/zerotier-scripts/main/zerotier-join.sh
+  - chmod +x zerotier-join.sh
+  - ZTNETWORK=${zerotier_network_id_internal} ./zerotier-join.sh
+  - ZTNETWORK=${zerotier_network_id_external} ./zerotier-join.sh
+  - rm ./zerotier-join.sh
+
+write_files:
+  - path: /var/lib/zerotier-one/identity.public
+    content: |
+      ${zerotier_public_key}
+
+  - path: /var/lib/zerotier-one/identity.secret
+    content: |
+      ${zerotier_private_key}

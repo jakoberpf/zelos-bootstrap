@@ -1,4 +1,9 @@
-variable "clustername" {
+variable "cluster_name" {
+  type    = string
+  default = "oracle"
+}
+
+variable "cluster_compartment" {
   type    = string
   default = "oracle"
 }
@@ -43,5 +48,21 @@ variable "cidr_block" {
 }
 
 variable "ssh_authorized_keys" {
+  type    = string
+}
+
+variable "zerotier_network_id_internal" {
+  type    = string
+}
+
+variable "zerotier_network_id_external" {
+  type    = string
+}
+
+variable "zerotier_ip_assignment_internal" {
+  type    = string
+}
+
+variable "zerotier_ip_assignment_external" {
   type    = string
 }

@@ -1,7 +1,7 @@
 resource "oci_core_instance" "oaik_0" {
   compartment_id      = var.compartment_id
   availability_domain = var.availability_domain
-  display_name        = "${var.clustername}-node-${random_string.deployment_id.result}"
+  display_name        = "${var.cluster_name}-${var.cluster_compartment}-node-${random_string.deployment_id.result}"
   shape               = var.instance_shape
 
   shape_config {
@@ -18,10 +18,11 @@ resource "oci_core_instance" "oaik_0" {
   create_vnic_details {
     subnet_id        = oci_core_subnet.oaik.id
     assign_public_ip = true
-    hostname_label   = "${var.clustername}-node${random_string.deployment_id.result}"
+    hostname_label   = "${var.cluster_name}-${var.cluster_compartment}-node-${random_string.deployment_id.result}"
     nsg_ids = [
       oci_core_network_security_group.oaik_kube.id,
       oci_core_network_security_group.oaik_etcd.id,
+      oci_core_network_security_group.oaik_zerotier.id
     ]
   }
 
@@ -29,7 +30,10 @@ resource "oci_core_instance" "oaik_0" {
     ssh_authorized_keys = var.ssh_authorized_keys
     user_data = base64encode(templatefile("${path.module}/templates/node.yaml.tpl",
       {
-        dummy  = "",
+        zerotier_network_id_internal = var.zerotier_network_id_internal,
+        zerotier_network_id_external = var.zerotier_network_id_external,
+        zerotier_public_key  = zerotier_identity.oaik_0.public_key,
+        zerotier_private_key = zerotier_identity.oaik_0.private_key
       }
     ))
   }
