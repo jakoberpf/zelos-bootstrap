@@ -117,3 +117,8 @@ variable "tanja_default_dhcp_options_id" {
 variable "tanja_route_table_id" {
   type = string
 }
+
+# Zerotier
+variable "zerotier_central_token" {
+  type = string
+}
