@@ -23,6 +23,10 @@ terraform: all
 	@echo "[terraform] Creating cluster infrastructure with terraform"
 	@./bin/terraform.sh
 
+terraform.force: all
+	@echo "[terraform] Creating cluster infrastructure with terraform by bruceforce"
+	@./bin/terraform.sh --loop
+
 kubespray: all
 	@echo "[kubespray] Creating cluster with kubespray"
 	@./bin/kubespray.sh
