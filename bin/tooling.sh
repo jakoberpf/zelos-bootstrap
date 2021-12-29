@@ -1,0 +1,4 @@
+- verify docker install
+- verify vault install
+- verify cault install
+- setup terraform with tfenv
