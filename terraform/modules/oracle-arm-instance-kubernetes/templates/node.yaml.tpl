@@ -15,10 +15,7 @@ runcmd:
   - iptables -I INPUT 2 -p tcp --dport 6443 -j ACCEPT
   - iptables -I INPUT 2 -p tcp --dport 9254 -j ACCEPT
   - iptables -I INPUT 2 -p tcp --dport 10250 -j ACCEPT
-  # - iptables -P INPUT ACCEPT
-  # - iptables -P OUTPUT ACCEPT
-  # - iptables -P FORWARD ACCEPT
-  # - iptables -F
+  - iptables -F
   - iptables-save > /etc/iptables/rules.v4
   # Setup Zerotier
   - curl -o zerotier-install.sh https://raw.githubusercontent.com/jakoberpf/zerotier-scripts/main/zerotier-installer.sh
