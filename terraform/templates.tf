@@ -57,7 +57,7 @@ resource "local_file" "ssh_config" {
         "zelos-tanja"
     ],
     node-user = "ubuntu",
-    node-key = "${abspath(path.root)}/../.ssh/automation.openssh.pem"
+    node-key = "${abspath(path.root)}/../.ssh/automation"
   }
  )
  filename = "${path.root}/../.ssh/config"
