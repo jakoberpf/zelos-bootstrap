@@ -42,7 +42,7 @@ module "oracle_instance_fabian" {
   cluster_compartment = "fabian"
   vcn_id = var.fabian_vcn_id
   default_dhcp_options_id = var.fabian_default_dhcp_options_id
-  availability_domain = var.fabian_availability_domains[0]
+  availability_domain = var.fabian_availability_domains[1]
   compartment_id = var.fabian_compartment_ocid
   route_table_id = var.fabian_route_table_id
   cidr_block = "192.168.65.0/24"
@@ -65,7 +65,7 @@ module "oracle_instance_tanja" {
   cluster_compartment = "tanja"
   vcn_id = var.tanja_vcn_id
   default_dhcp_options_id = var.tanja_default_dhcp_options_id
-  availability_domain = var.tanja_availability_domains[1]
+  availability_domain = var.tanja_availability_domains[2]
   compartment_id = var.tanja_compartment_ocid
   route_table_id = var.tanja_route_table_id
   cidr_block = "192.168.65.0/24"
