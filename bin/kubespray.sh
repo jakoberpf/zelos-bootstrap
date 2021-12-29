@@ -21,4 +21,4 @@ domain_name="api.zelos.k8s.infra.erpf.de"
 domain_url="https:\/\/$domain_name:6443"
 sed -i "" "/^\([[:space:]]*server: \).*/s//\1$domain_url/" kubespray/inventory/zelos/artifacts/admin.conf
 admin_conf="$(cat kubespray/inventory/zelos/artifacts/admin.conf | base64)"
-# vault kv put CICD/repo/zelos-bootstrap/live/kube-secret admin_conf=$admin_conf
+vault kv put CICD/repo/zelos-bootstrap/live/kube-secret admin_conf=$admin_conf
