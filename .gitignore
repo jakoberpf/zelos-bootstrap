@@ -31,5 +31,4 @@ override.tf.json
 
 .venv
 .DS_Store
-.ssh/*
-!.ssh/config
+.ssh
