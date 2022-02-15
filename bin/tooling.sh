@@ -2,3 +2,4 @@
 - verify vault install
 - verify cault install
 - setup terraform with tfenv
+- setup providers with `m1-terraform-provider-helper install <provider> -v <version>`
