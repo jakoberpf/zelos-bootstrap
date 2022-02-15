@@ -9,7 +9,8 @@ terraform {
   }
   required_providers {
     oci = {
-      source = "hashicorp/oci"
+      source  = "hashicorp/oci"
+      version = "4.58.0"
       configuration_aliases = [
         oci.jakob,
         oci.fabian,
@@ -17,7 +18,7 @@ terraform {
       ]
     }
     zerotier = {
-      source = "zerotier/zerotier"
+      source  = "zerotier/zerotier"
       version = "1.2.0"
     }
   }
