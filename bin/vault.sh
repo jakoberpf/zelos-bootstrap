@@ -9,8 +9,11 @@ cd .ssh
 vault2env CICD/global/ssh/automation .env
 source .env
 
+rm automation
 echo "$PRIVAT_KEY_OPENSSH_PEM" | base64 --decode >> automation
 chmod 600 automation
+
+rm automation.pub
 echo "$PUBLIC_KEY_SSH" | base64 --decode >> automation.pub
 chmod 600 automation.pub
 
