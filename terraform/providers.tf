@@ -1,12 +1,5 @@
 terraform {
-  backend "s3" {
-    bucket         = "hashicorp-terraform-backend"
-    key            = "jakoberpf/zelos-bootstrap/live/terraform.tfstate"
-    region         = "eu-central-1"
-    encrypt        = true
-    kms_key_id     = "f066dc61-8dbe-4bbb-b4fe-1171fa476a4c"
-    dynamodb_table = "tf-remote-state-lock"
-  }
+  backend "s3" {}
   required_providers {
     oci = {
       source  = "hashicorp/oci"
@@ -51,32 +44,14 @@ provider "oci" {
   region           = var.region
 }
 
-# provider "oci" {
-#   alias            = "tobias"
-#   tenancy_ocid     = var.tanja_tenancy_ocid
-#   user_ocid        = var.tanja_user_ocid
-#   fingerprint      = var.tanja_fingerprint
-#   private_key_path = var.tanja_private_key_path
-#   region           = var.region
-# }
-
-# provider "oci" {
-#   alias            = "paulina"
-#   tenancy_ocid     = var.tanja_tenancy_ocid
-#   user_ocid        = var.tanja_user_ocid
-#   fingerprint      = var.tanja_fingerprint
-#   private_key_path = var.tanja_private_key_path
-#   region           = var.region
-# }
-
-# provider "oci" {
-#   alias            = "ulrike"
-#   tenancy_ocid     = var.tanja_tenancy_ocid
-#   user_ocid        = var.tanja_user_ocid
-#   fingerprint      = var.tanja_fingerprint
-#   private_key_path = var.tanja_private_key_path
-#   region           = var.region
-# }
+provider "oci" {
+  alias            = "ulrike"
+  tenancy_ocid     = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].tenancy_ocid
+  user_ocid        = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].user_ocid
+  fingerprint      = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].fingerprint
+  private_key_path = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].private_key_path
+  region           = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].region
+}
 
 provider "zerotier" {
   zerotier_central_token = var.zerotier_central_token

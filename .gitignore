@@ -29,6 +29,6 @@ override.tf.json
 *identity.public
 *identity.secret
 
-.venv
-.DS_Store
-.ssh
+*.venv
+*.ssh
+*backend.conf
