@@ -30,6 +30,10 @@ variable "authorized_keys" {
   type = string
 }
 
+variable "oci_credentials" {
+  type = list(any)
+}
+
 ## jakoberpf
 variable "jakob_tenancy_ocid" {
   type = string
@@ -77,7 +81,7 @@ variable "fabian_private_key_path" {
   type = string
 }
 variable "fabian_availability_domains" {
-  type    = list(string)
+  type = list(string)
 }
 variable "fabian_vcn_id" {
   type = string
@@ -106,7 +110,7 @@ variable "tanja_private_key_path" {
   type = string
 }
 variable "tanja_availability_domains" {
-  type    = list(string)
+  type = list(string)
 }
 variable "tanja_vcn_id" {
   type = string
