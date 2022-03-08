@@ -9,29 +9,37 @@ module "zerotier_cluster_network" {
   ]
 }
 
-module "oracle_vcn_ulrike" {
+locals {
+  compartments = ["ulrike"]
+}
+
+module "clouds" {
   source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/base-vpc" #"jakoberpf/base-vpc/oracle"
   providers = {
     oci = oci.ulrike
   }
 
+  for_each = toset(local.compartments)
+
   name                 = "zelos"
-  compartment_id       = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].compartment_ocid
-  availability_domains = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].availability_domains
+  compartment_id       = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].compartment_ocid
+  availability_domains = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].availability_domains
 }
 
-module "oracle_instance_ulrike" {
+module "instances" {
   source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/kubernetes-node"
   providers = {
     oci = oci.ulrike
   }
 
+  for_each = toset(local.compartments)
+
   name                            = "zelos"
-  compartment                     = "ulrike"
-  vcn_id                          = module.oracle_vcn_ulrike.vcn_id
-  compartment_id                  = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].compartment_ocid
-  subnet_id                       = module.oracle_vcn_ulrike.public_subnet_ids[1]
-  availability_domain             = var.oci_credentials[index(var.oci_credentials.*.id, "ulrike")].availability_domains[1]
+  compartment                     = each.value
+  vcn_id                          = module.clouds[each.value].vcn_id
+  compartment_id                  = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].compartment_ocid
+  subnet_id                       = module.clouds[each.value].public_subnet_ids[1]
+  availability_domain             = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].availability_domains[1]
   ssh_authorized_keys             = var.authorized_keys
   zerotier_network_id_internal    = module.zerotier_cluster_network.network_ids[0]
   zerotier_network_id_external    = module.zerotier_cluster_network.network_ids[1]
