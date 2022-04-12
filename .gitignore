@@ -32,3 +32,4 @@ override.tf.json
 *.venv
 *.ssh
 *backend.conf
+*terragrunt.json
