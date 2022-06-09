@@ -9,6 +9,11 @@ crash.log
 *tfstate.backup
 *.tfvars
 
+# Ignore generated terragrunt files and configuration files
+*generated.*.tf
+*backend.conf
+*terragrunt.json
+
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
 override.tf
@@ -31,5 +36,3 @@ override.tf.json
 
 *.venv
 *.ssh
-*backend.conf
-*terragrunt.json

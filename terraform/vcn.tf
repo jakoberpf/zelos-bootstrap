@@ -1,48 +1,40 @@
-module "zerotier_cluster_network" {
-  source = "jakoberpf/cluster-network/zerotier"
+# module "instances" {
+#   source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/kubernetes-node"
+#   providers = {
+#     oci = oci.ulrike
+#   }
 
-  name = "zelos"
-  cidr = "10.110.110.0/24"
-  networks = [
-    "internal",
-    "external"
-  ]
-}
+#   for_each = toset([
+#     "ulrike"
+#   ]) # local.compartments)
 
-locals {
-  compartments = ["ulrike"]
-}
+#   name                            = "zelos"
+#   compartment                     = each.value
+#   vcn_id                          = module.clouds[each.value].vcn_id
+#   compartment_id                  = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].compartment_ocid
+#   subnet_id                       = module.clouds[each.value].public_subnet_ids[1]
+#   availability_domain             = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].availability_domains[1]
+#   ssh_authorized_keys             = var.authorized_keys
+#   zerotier_network_id_internal    = module.zerotier_cluster_network.network_ids[0]
+#   zerotier_network_id_external    = module.zerotier_cluster_network.network_ids[1]
+#   zerotier_ip_assignment_internal = ["10.110.110.11"]
+#   zerotier_ip_assignment_external = ["10.110.111.11"]
+# }
 
-module "clouds" {
-  source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/base-vpc" #"jakoberpf/base-vpc/oracle"
-  providers = {
-    oci = oci.ulrike
-  }
+# locals {
+#   instance_names = toset([
+#     for instance in module.instances : instance.compartment
+#   ])
+#   instance_public_ips = toset([
+#     for instance in module.instances : instance.public_ip
+#   ])
+#   # instance_private_ips = toset([
+#   #   for instance in module.instances : instance.public_ip
+#   # ])
+# }
 
-  for_each = toset(local.compartments)
-
-  name                 = "zelos"
-  compartment_id       = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].compartment_ocid
-  availability_domains = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].availability_domains
-}
-
-module "instances" {
-  source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/kubernetes-node"
-  providers = {
-    oci = oci.ulrike
-  }
-
-  for_each = toset(local.compartments)
-
-  name                            = "zelos"
-  compartment                     = each.value
-  vcn_id                          = module.clouds[each.value].vcn_id
-  compartment_id                  = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].compartment_ocid
-  subnet_id                       = module.clouds[each.value].public_subnet_ids[1]
-  availability_domain             = var.oci_credentials[index(var.oci_credentials.*.id, each.value)].availability_domains[1]
-  ssh_authorized_keys             = var.authorized_keys
-  zerotier_network_id_internal    = module.zerotier_cluster_network.network_ids[0]
-  zerotier_network_id_external    = module.zerotier_cluster_network.network_ids[1]
-  zerotier_ip_assignment_internal = ["10.110.110.11"]
-  zerotier_ip_assignment_external = ["10.110.111.11"]
-}
+# output "IPs" {
+#   value = toset([
+#     for instance in module.instances : instance.public_ip
+#   ])
+# }

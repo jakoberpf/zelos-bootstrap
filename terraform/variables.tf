@@ -1,23 +1,3 @@
-## S3 Terraform Backend
-# variable "tf_backend_region" {
-#   type = string
-# }
-# variable "tf_backend_access_key" {
-#   type = string
-# }
-# variable "tf_backend_secret_access_key" {
-#   type = string
-# }
-# variable "tf_backend_bucket" {
-#   type = string
-# }
-# variable "tf_backend_kms_key_id" {
-#   type = string
-# }
-# variable "tf_backend_dynamo_table" {
-#   type = string
-# }
-
 # OracleCloud
 variable "instance_shape" {
   type    = string
@@ -29,7 +9,6 @@ variable "region" {
 variable "authorized_keys" {
   type = string
 }
-
 variable "oci_credentials" {
   type = list(any)
 }
