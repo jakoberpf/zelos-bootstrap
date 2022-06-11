@@ -4,7 +4,7 @@ cd $GIT_ROOT
 
 # Run terraform apply
 cd $GIT_ROOT/terraform
-terraform init -backend-config=backend.conf -upgrade
+terragrunt init -backend-config=backend.conf -upgrade
 
 if [[ $* == *--loop* ]]; then
   start=`date +%s`
