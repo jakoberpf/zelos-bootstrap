@@ -86,14 +86,56 @@ module "peering-${requestor.id}-${acceptor}" {
     oci.acceptor = oci.${acceptor}
   }
 
+  requestor_id = "${requestor.id}"
   requestor_compartment_ocid = oci_identity_compartment.compartment-${requestor.id}.id
   requestor_root_compartment_ocid = "${requestor.tenancy_ocid}"
   requestor_vnc_ocid = module.vnc-${requestor.id}.vcn_id
+  requestor_route_table_id = module.vnc-${requestor.id}.route_table_id
+  acceptor_id = "${acceptor}"
   acceptor_compartment_ocid = oci_identity_compartment.compartment-${acceptor}.id
   acceptor_root_compartment_ocid = "${local.oci_credentials[index(local.oci_credentials.*.id, "${acceptor}")].tenancy_ocid}"
   acceptor_vnc_ocid = module.vnc-${acceptor}.vcn_id
+  acceptor_route_table_id = module.vnc-${acceptor}.route_table_id
+}
+
+resource "local_file" "peering-${requestor.id}-${acceptor}-requestor" {
+  filename = "$${path.module}/../bin/generated/peering-${requestor.id}-${acceptor}-requestor.sh"
+  content  = module.peering-${requestor.id}-${acceptor}.requestor_route_rule_script
+}
+
+resource "local_file" "peering-${requestor.id}-${acceptor}-acceptor" {
+  filename = "$${path.module}/../bin/generated/peering-${requestor.id}-${acceptor}-acceptor.sh"
+  content  = module.peering-${requestor.id}-${acceptor}.acceptor_route_rule_script
 }
 %{endfor}%{endfor}
+
+EOF
+}
+
+generate "nodes" {
+  path = "generated.nodes.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+%{for tenancy in local.oci_credentials}
+module "node-${tenancy.id}" {
+  source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/kubernetes-node-2"
+  providers = {
+    oci = oci.${tenancy.id}
+  }
+
+  name                            = "telos"
+  compartment                     = "${tenancy.id}"
+  vcn_id                          = module.vnc-${tenancy.id}.vcn_id
+  compartment_id                  = oci_identity_compartment.compartment-${tenancy.id}.id
+  subnet_id                       = module.vnc-${tenancy.id}.public_subnet_ids[${tenancy.availability_domains_placement - 1}]
+  availability_domain             = "${tenancy.availability_domains[tenancy.availability_domains_placement - 1]}"
+  ssh_authorized_keys             = var.authorized_keys
+
+  depends_on = [
+    module.vnc-${tenancy.id}
+  ]
+}
+%{endfor}
 
 EOF
 }

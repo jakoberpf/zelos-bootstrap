@@ -49,12 +49,20 @@ resource "local_file" "ssh_config" {
     node-ip = [
         module.oracle_instance_jakob.public_ip,
         module.oracle_instance_fabian.public_ip,
-        module.oracle_instance_tanja.public_ip
+        module.oracle_instance_tanja.public_ip,
+        module.node-jakob.public_ip,
+        module.node-tanja.public_ip,
+        module.node-fabian.public_ip,
+        module.node-ulrike.public_ip,
     ]
     node-id = [
         "zelos-jakob",
         "zelos-fabian",
-        "zelos-tanja"
+        "zelos-tanja",
+        "node-jakob",
+        "node-tanja",
+        "node-fabian",
+        "node-ulrike"
     ],
     node-user = "ubuntu",
     node-key = "${abspath(path.root)}/../.ssh/automation"
