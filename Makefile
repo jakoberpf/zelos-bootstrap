@@ -31,7 +31,7 @@ terraform.force: all
 	@echo "[terraform] Creating cluster infrastructure with terraform by bruceforce"
 	@./bin/terraform.sh --loop
 
-terraform.post: all
+terraform.post: all terraform
 	@echo "[terraform] Postprocessing terraform infrastructure"
 	@./bin/generated/peering.sh
 
