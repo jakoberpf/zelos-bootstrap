@@ -118,7 +118,7 @@ generate "nodes" {
   contents = <<EOF
 %{for tenancy in local.oci_credentials}
 module "node-${tenancy.id}" {
-  source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/kubernetes-node-2"
+  source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/kubernetes-node"
   providers = {
     oci = oci.${tenancy.id}
   }
