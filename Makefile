@@ -31,11 +31,15 @@ terraform.force: all
 	@echo "[terraform] Creating cluster infrastructure with terraform by bruceforce"
 	@./bin/terraform.sh --loop
 
+terraform.post: all
+	@echo "[terraform] Postprocessing terraform infrastructure"
+	@./bin/generated/peering.sh
+
 kubespray: all
 	@echo "[kubespray] Creating cluster with kubespray"
 	@./bin/kubespray.sh
 
-deploy: terraform kubespray
+deploy: terraform terraform.post kubespray
 	@echo "[kubespray] Creating cluster with kubespray"
 
 destroy: all
