@@ -1,5 +1,5 @@
 # https://makefiletutorial.com/
-all: banner vault # tooling before vault
+all: banner tooling vault # tooling before vault
 
 banner: # Typo: Allogator2 from https://manytools.org/hacker-tools/ascii-banner/
 	@echo "################################################################"
@@ -13,9 +13,13 @@ banner: # Typo: Allogator2 from https://manytools.org/hacker-tools/ascii-banner/
 	@echo "##    ######### ########## ########## ########   ########     ##"
 	@echo "##                                                            ##"
 	@echo "################################################################"
-	@echo "                                                                "
+	@echo " 															   "
+	
+tooling: banner
+	@echo "[tooling] Setting up tooling"
+	@./bin/tooling.sh
 
-vault: all
+vault: banner tooling
 	@echo "[vault] Getting configuration and secrets from Vault"
 	@./bin/vault.sh
 
