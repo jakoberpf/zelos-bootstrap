@@ -2,6 +2,9 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
+# Source python tooling
+source $GIT_ROOT/.venv/bin/activate
+
 # Run terraform apply
 cd $GIT_ROOT/terraform
 terragrunt init -backend-config=backend.conf -upgrade

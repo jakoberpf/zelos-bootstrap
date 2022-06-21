@@ -2,6 +2,8 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
+# TODO: check if vault is online, otherwise start local vault
+
 # SSH Keys
 mkdir -p "$GIT_ROOT/.ssh"
 cd .ssh
