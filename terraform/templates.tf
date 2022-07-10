@@ -1,38 +1,42 @@
 resource "local_file" "kubespray_inventory" {
   depends_on = [
-    module.oracle_instance_jakob.public_ip,
-    module.oracle_instance_fabian.public_ip,
-    module.oracle_instance_tanja.public_ip
+    module.node-jakob.public_ip,
+    module.node-tanja.public_ip,
+    module.node-fabian.public_ip,
+    module.node-ulrike.public_ip,
+    module.node-tobias.public_ip
   ]
   content = templatefile("${path.module}/templates/inventory.tpl",
   {
     masters-ip-public = [
-        module.oracle_instance_jakob.public_ip,
-        module.oracle_instance_fabian.public_ip,
-        module.oracle_instance_tanja.public_ip
+        module.node-jakob.public_ip,
+        module.node-tanja.public_ip,
+        module.node-fabian.public_ip
     ]
-    masters-ip-zt-internal = [
-        module.oracle_instance_jakob.zt_internal_ip,
-        module.oracle_instance_fabian.zt_internal_ip,
-        module.oracle_instance_tanja.zt_internal_ip
-    ]
-    masters-ip-zt-external = [
-        module.oracle_instance_jakob.zt_external_ip,
-        module.oracle_instance_fabian.zt_external_ip,
-        module.oracle_instance_tanja.zt_external_ip
+    masters-ip-private = [
+        module.node-jakob.private_ip,
+        module.node-tanja.private_ip,
+        module.node-fabian.private_ip
     ]
     masters-id = [
-        "master-jakob",
-        "master-fabian",
-        "master-tanja"
+        "node-jakob",
+        "node-tanja",
+        "node-fabian"
     ],
     masters-user = "ubuntu",
-    workers-ip = []
-    workers-id = [],
+    workers-ip-public = [
+        module.node-ulrike.public_ip,
+        module.node-tobias.public_ip
+    ]
+    workers-ip-private = [
+        module.node-ulrike.private_ip,
+        module.node-tobias.private_ip
+    ]
+    workers-id = [
+        "node-ulrike",
+        "node-tobias"
+    ],
     workers-user = "ubuntu",
-    bastion-ip = ""
-    bastion-id = "",
-    bastion-user = "ubuntu",
   }
  )
  filename = "${path.root}/../kubespray/inventory/zelos/inventory.ini"
@@ -40,29 +44,27 @@ resource "local_file" "kubespray_inventory" {
 
 resource "local_file" "ssh_config" {
   depends_on = [
-    module.oracle_instance_jakob.public_ip,
-    module.oracle_instance_fabian.public_ip,
-    module.oracle_instance_tanja.public_ip
+    module.node-jakob.public_ip,
+    module.node-tanja.public_ip,
+    module.node-fabian.public_ip,
+    module.node-ulrike.public_ip,
+    module.node-tobias.public_ip
   ]
   content = templatefile("${path.module}/templates/config.tpl",
   {
     node-ip = [
-        module.oracle_instance_jakob.public_ip,
-        module.oracle_instance_fabian.public_ip,
-        module.oracle_instance_tanja.public_ip,
         module.node-jakob.public_ip,
         module.node-tanja.public_ip,
         module.node-fabian.public_ip,
         module.node-ulrike.public_ip,
+        module.node-tobias.public_ip,
     ]
     node-id = [
-        "zelos-jakob",
-        "zelos-fabian",
-        "zelos-tanja",
         "node-jakob",
         "node-tanja",
         "node-fabian",
-        "node-ulrike"
+        "node-ulrike",
+        "node-tobias"
     ],
     node-user = "ubuntu",
     node-key = "${abspath(path.root)}/../.ssh/automation"
