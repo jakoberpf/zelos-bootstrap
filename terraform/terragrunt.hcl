@@ -123,7 +123,7 @@ module "node-${tenancy.id}" {
     oci = oci.${tenancy.id}
   }
 
-  name                            = "telos"
+  name                            = "zelos"
   compartment                     = "${tenancy.id}"
   vcn_id                          = module.vnc-${tenancy.id}.vcn_id
   compartment_id                  = oci_identity_compartment.compartment-${tenancy.id}.id
