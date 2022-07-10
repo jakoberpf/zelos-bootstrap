@@ -11,14 +11,15 @@ terragrunt init -backend-config=backend.conf -upgrade
 
 if [[ $* == *--loop* ]]; then
   start=`date +%s`
-  until terraform apply -var-file="variables.tfvars" -auto-approve
+  until terragrunt apply -auto-approve
   do
     now=`date +%s`
     runtime=$((now-start))
-    echo "Error during apply. OCI Hosts possibly out of capacity. Try again... (running for $runtime)"
+    echo "Error during apply. OCI Hosts possibly out of capacity. Try again... (running for $runtime s)"
+    sleep 10
   done
 else
-  terraform apply -var-file="variables.tfvars"
+  terragrunt apply
 fi
 
 cd $GIT_ROOT
