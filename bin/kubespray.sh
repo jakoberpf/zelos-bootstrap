@@ -17,8 +17,13 @@ docker run --rm -it \
   quay.io/kubespray/kubespray:v2.17.1 bash -c "ansible-playbook -i /inventory/inventory.ini -b --private-key /root/.ssh/id_rsa cluster.yml"
 
 # Push kubernetes admin config to vault
-domain_name="api.zelos.k8s.infra.erpf.de"
-domain_url="https:\/\/$domain_name:6443"
-sed -i "" "/^\([[:space:]]*server: \).*/s//\1$domain_url/" kubespray/inventory/zelos/artifacts/admin.conf
-admin_conf="$(cat kubespray/inventory/zelos/artifacts/admin.conf | base64)"
+config_file="kubespray/inventory/zelos/artifacts/admin.conf"
+yq -i '.clusters[0].cluster.server = "https://api.zelos.k8s.erpf.de:6443"' $config_file
+yq -i '.clusters[0].name = "erpf-zelos-live"' $config_file
+yq -i '.contexts[0].context.cluster = "erpf-zelos-live"' $config_file
+yq -i '.contexts[0].context.user = "admin"' $config_file
+yq -i '.contexts[0].name = "erpf-zelos-live"' $config_file
+yq -i '.current-context = "erpf-zelos-live"' $config_file
+yq -i '.users[0].name = "admin"' $config_file
+admin_conf="$(cat $config_file | base64)"
 vault kv put CICD/repo/zelos-bootstrap/live/kube-secret admin_conf=$admin_conf
