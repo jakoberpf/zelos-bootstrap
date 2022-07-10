@@ -1,13 +1,10 @@
 [all]
 %{ for index, id in masters-id ~}
-${id} ansible_host=${masters-ip-zt-internal[index]} ansible_user=${masters-user} etcd_member_name=etcd-${index} ip=${masters-ip-zt-internal[index]}
+${id} ansible_host=${masters-ip-public[index]} ansible_user=${masters-user} etcd_member_name=etcd-${index} ip=${masters-ip-private[index]}
 %{ endfor ~}
 %{ for index, id in workers-id ~}
-${id} ansible_host=${workers-ip[index]} ansible_user=${workers-user}
+${id} ansible_host=${workers-ip-public[index]} ansible_user=${workers-user} ip=${workers-ip-private[index]}
 %{ endfor ~}
-
-# [bastion]
-# ${bastion-id} ansible_host=${bastion-ip} ansible_user=${bastion-user}
 
 [kube-master]
 %{ for index, id in masters-id ~}
