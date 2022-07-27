@@ -45,11 +45,3 @@ deploy: terraform terraform.post kubespray
 destroy: all
 	@echo "[bootstrap] Destroying cluster infrastructure"
 	@cd terraform && terraform destroy -var-file="variables.tfvars"
-
-taint.instances: all
-	@cd terraform && terraform taint module.oracle_instance_jakob.oci_core_instance.oaik_0
-	@cd terraform && terraform taint module.oracle_instance_fabian.oci_core_instance.oaik_0
-	@cd terraform && terraform taint module.oracle_instance_tanja.oci_core_instance.oaik_0
-
-test.nmap: all
-	@nmap 130.61.169.137 -Pn -p T:2379,6443
