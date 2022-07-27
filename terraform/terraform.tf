@@ -4,12 +4,8 @@ terraform {
     oci = {
       source = "hashicorp/oci"
     }
-    zerotier = {
-      source = "zerotier/zerotier"
+    cloudflare = {
+      source = "cloudflare/cloudflare"
     }
   }
-}
-
-provider "zerotier" {
-  zerotier_central_token = var.zerotier_central_token
 }
