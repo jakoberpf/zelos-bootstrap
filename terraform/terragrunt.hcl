@@ -1,6 +1,8 @@
 locals {
   vars = jsondecode(file("terragrunt.json"))
   oci_credentials = local.vars.oci_credentials
+  cloudflare_credentials = local.vars.cloudflare_credentials
+  authorized_keys = local.vars.authorized_keys
 }
 
 terraform {
@@ -30,6 +32,11 @@ provider "oci" {
   region           = "${content.region}"
 }
 %{endfor}
+
+provider "cloudflare" {
+  email   = "${local.cloudflare_credentials.email}"
+  api_key = "${local.cloudflare_credentials.api_key}"
+}
 
 EOF
 }
@@ -136,6 +143,21 @@ module "node-${tenancy.id}" {
   ]
 }
 %{endfor}
+
+EOF
+}
+
+generate "dns" {
+  path = "generated.dns.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+resource "cloudflare_record" "api" {
+  zone_id  = "${local.cloudflare_credentials.zone_id}"
+  name     = "api.zelos.k8s.erpf.de"
+  value    = module.node-jakob.public_ip
+  type     = "A"
+  proxied  = false
+}
 
 EOF
 }
