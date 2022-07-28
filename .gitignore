@@ -36,4 +36,4 @@ override.tf.json
 
 *.venv
 *.ssh
-/kubespray/inventory/zelos/inventory.ini
+/kubespray/inventory.ini

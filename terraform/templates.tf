@@ -39,7 +39,7 @@ resource "local_file" "kubespray_inventory" {
     workers-user = "ubuntu",
   }
  )
- filename = "${path.root}/../kubespray/inventory/zelos/inventory.ini"
+ filename = "${path.root}/../kubespray/inventory.ini"
 }
 
 resource "local_file" "ssh_config" {
