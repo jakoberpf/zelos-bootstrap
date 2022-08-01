@@ -24,3 +24,4 @@ TODO Terraform
 - OCI Kubernetes Configuration Guide [oracle.github.io](https://oracle.github.io/cluster-api-provider-oci/networking/calico.html)
 - OCI Networking does not allow IP-in-IP or IPIP (93) protocol in local peering which is why we are using calicos XVLAN implementation [stackoverflow.com](https://stackoverflow.com/questions/53247682/kubernetes-calico-on-oracle-cloud-vms)
 - Calico https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements
+- TODO Rolling Upgrade with https://gmusumeci.medium.com/how-to-get-the-latest-os-image-in-oracle-cloud-infrastructure-using-terraform-f53823223968
