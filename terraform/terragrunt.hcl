@@ -159,6 +159,16 @@ resource "cloudflare_record" "api" {
   proxied  = false
 }
 
+%{for tenancy in local.oci_credentials}
+resource "cloudflare_record" "node-${tenancy.id}" {
+  zone_id  = "${local.cloudflare_credentials.zone_id}"
+  name     = "${tenancy.id}.nodes.zelos.k8s.erpf.de"
+  value    = module.node-${tenancy.id}.public_ip
+  type     = "A"
+  proxied  = false
+}
+%{endfor}
+
 EOF
 }
 
