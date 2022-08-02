@@ -11,7 +11,7 @@ terragrunt init -backend-config=backend.conf -upgrade
 
 if [[ $* == *--loop* ]]; then
   start=`date +%s`
-  until terragrunt apply -auto-approve
+  until terragrunt apply -auto-approve # | grep -q 'Out of host capacity'
   do
     now=`date +%s`
     runtime=$((now-start))
