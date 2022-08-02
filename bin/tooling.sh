@@ -6,7 +6,7 @@ python -m venv $GIT_ROOT/.venv
 source $GIT_ROOT/.venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install --upgrade ansible
-ansible-galaxy install caddy_ansible.caddy_ansible
+ansible-galaxy install caddy_ansible.caddy_ansible.v3.1.0
 
 # - verify docker install
 # - verify vault install
