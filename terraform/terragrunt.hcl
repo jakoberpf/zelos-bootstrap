@@ -136,7 +136,7 @@ module "node-${tenancy.id}" {
   compartment_id                  = oci_identity_compartment.compartment-${tenancy.id}.id
   subnet_id                       = module.vnc-${tenancy.id}.public_subnet_ids[${tenancy.availability_domains_placement - 1}]
   availability_domain             = "${tenancy.availability_domains[tenancy.availability_domains_placement - 1]}"
-  ssh_authorized_keys             = var.authorized_keys
+  ssh_authorized_keys             = var.authorized_keys # "${local.authorized_keys}"
 
   depends_on = [
     module.vnc-${tenancy.id}
