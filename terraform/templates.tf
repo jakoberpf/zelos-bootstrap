@@ -1,3 +1,4 @@
+# TODO generate with terragrunt
 resource "local_file" "kubespray_inventory" {
   depends_on = [
     module.node-jakob.public_ip,
