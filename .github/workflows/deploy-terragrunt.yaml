@@ -34,7 +34,7 @@ jobs:
 
       - name: 'Decrypt secrets'
         run: |
-          sops --decrypt terraform/backend.enc.conf > terraform/backend.conf
+          ./bin/sops-decrypt.sh
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}  
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
