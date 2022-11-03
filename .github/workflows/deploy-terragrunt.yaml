@@ -35,8 +35,7 @@ jobs:
       - name: 'Decrypt secrets'
         run: |
           echo "$SOPS_AGE_KEY" | base64 --decode > $SOPS_AGE_KEY_FILE
-          cat $SOPS_AGE_KEY_FILE
-          sops terraform/backend.enc.conf
+          sops --decrypt terraform/backend.enc.conf
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}  
           SOPS_AGE_KEY_FILE: ${{ secrets.SOPS_AGE_KEY_FILE }}
