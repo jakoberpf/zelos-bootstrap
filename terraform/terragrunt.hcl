@@ -62,7 +62,7 @@ generate "vnc" {
   contents = <<EOF
 %{for key, content in local.oci_credentials}
 module "vnc-${content.id}" {
-  source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/base-vpc"
+  source = "jakoberpf/base-vpc/oracle"
   providers = {
     oci = oci.${content.id}
   }
