@@ -27,7 +27,7 @@ jobs:
 
       - name: 'Install AGE'
         run: |
-          apt install age
+          sudo apt install age
 
       # - name: 'Terragrunt Format'
       #   uses: the-commons-project/terragrunt-github-actions@master
