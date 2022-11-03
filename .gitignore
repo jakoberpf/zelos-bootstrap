@@ -7,7 +7,7 @@ crash.log
 .terraform
 *.tfstate
 *tfstate.backup
-*variables.tfvars
+*.tfvars
 
 # Ignore generated terragrunt files and configuration files
 *generated.*.tf
@@ -33,9 +33,7 @@ override.tf.json
 *.vault_pass
 *identity.public
 *identity.secret
-*age.key
 *.venv
 *.ssh
 *.pem
-!*.enc.pem
 /kubespray/inventory.ini

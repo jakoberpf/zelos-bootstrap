@@ -2,12 +2,12 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
-sops --decrypt terraform/backend.enc.conf > terraform/backend.conf
-sops --decrypt terraform/terragrunt.enc.json > terraform/terragrunt.json
-sops --decrypt terraform/variables.enc.tfvars > terraform/variables.tfvars
+sops --decrypt terraform/backend.conf.enc > terraform/backend.conf
+sops --decrypt terraform/terragrunt.json.enc > terraform/terragrunt.json
+sops --decrypt terraform/variables.tfvars.enc > terraform/variables.tfvars
 
-sops --decrypt .oci/fabian.enc.pem > .oci/fabian.pem
-sops --decrypt .oci/jakob.enc.pem > .oci/jakob.pem
-sops --decrypt .oci/tanja.enc.pem > .oci/tanja.pem
-sops --decrypt .oci/tobias.enc.pem > .oci/tobias.pem
-sops --decrypt .oci/ulrike.enc.pem > .oci/ulrike.pem
+sops --decrypt .oci/fabian.pem.enc > .oci/fabian.pem
+sops --decrypt .oci/jakob.pem.enc > .oci/jakob.pem
+sops --decrypt .oci/tanja.pem.enc > .oci/tanja.pem
+sops --decrypt .oci/tobias.pem.enc > .oci/tobias.pem
+sops --decrypt .oci/ulrike.pem.enc > .oci/ulrike.pem
