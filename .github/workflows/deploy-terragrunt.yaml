@@ -19,15 +19,15 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v1
 
-      - name: 'Install SOPS'
-          run: |
-            curl -O -L -C - https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux
-            sudo mv sops-v3.7.3.linux /usr/bin/sops
-            sudo chmod +x /usr/bin/sops
+      # - name: 'Install SOPS'
+      #     run: |
+      #       curl -O -L -C - https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux
+      #       sudo mv sops-v3.7.3.linux /usr/bin/sops
+      #       sudo chmod +x /usr/bin/sops
 
-      - name: 'Install AGE'
-          run: |
-            apt install age
+      # - name: 'Install AGE'
+      #     run: |
+      #       apt install age
 
       # - name: 'Terragrunt Format'
       #   uses: the-commons-project/terragrunt-github-actions@master
