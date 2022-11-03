@@ -7,7 +7,7 @@ crash.log
 .terraform
 *.tfstate
 *tfstate.backup
-*.tfvars
+*variables.tfvars
 
 # Ignore generated terragrunt files and configuration files
 *generated.*.tf

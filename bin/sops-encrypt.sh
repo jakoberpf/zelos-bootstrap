@@ -3,6 +3,8 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
 sops --encrypt terraform/backend.conf > terraform/backend.enc.conf
+sops --encrypt terraform/terragrunt.json > terraform/terragrunt.enc.json
+sops --encrypt terraform/variables.tfvars > terraform/variables.enc.tfvars
 
 sops --encrypt .oci/fabian.pem > .oci/fabian.enc.pem
 sops --encrypt .oci/jakob.pem > .oci/jakob.enc.pem
