@@ -26,8 +26,8 @@ jobs:
           sudo chmod +x /usr/bin/sops
 
       - name: 'Install AGE'
-          run: |
-            apt install age
+        run: |
+          apt install age
 
       # - name: 'Terragrunt Format'
       #   uses: the-commons-project/terragrunt-github-actions@master
