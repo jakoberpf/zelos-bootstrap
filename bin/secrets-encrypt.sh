@@ -2,7 +2,7 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
-sops --encrypt terraform/terragrunt.yaml > terraform/terragrunt.yaml.enc
+sops --encrypt --input-type yaml --output-type yaml terraform/terragrunt.yaml > terraform/terragrunt.yaml.enc
 sops --encrypt terraform/variables.tfvars > terraform/variables.tfvars.enc
 
 sops --encrypt .oci/fabian.pem > .oci/fabian.pem.enc
