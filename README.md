@@ -49,3 +49,5 @@ Currently my deployment is managed with a mix of local commands an github terraf
 - OCI Networking does not allow IP-in-IP or IPIP (93) protocol in local peering which is why we are using calicos XVLAN implementation [stackoverflow.com](https://stackoverflow.com/questions/53247682/kubernetes-calico-on-oracle-cloud-vms)
 - Calico <https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements>
 - TODO Rolling Upgrade with <https://gmusumeci.medium.com/how-to-get-the-latest-os-image-in-oracle-cloud-infrastructure-using-terraform-f53823223968>
+- TODO https://github.com/aws-actions/configure-aws-credentials#assuming-a-role
+- TODO https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
