@@ -54,7 +54,7 @@ provider "oci" {
   tenancy_ocid     = "${content.tenancy_ocid}"
   user_ocid        = "${content.user_ocid}"
   fingerprint      = "${content.fingerprint}"
-  private_key_path = "${content.private_key_path}"
+  private_key      = "${content.private_key}"
   region           = "${content.region}"
 }
 %{endfor}
