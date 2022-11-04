@@ -87,7 +87,7 @@ generate "peering" {
   contents = <<EOF
 %{for requestor in local.oci_credentials}%{for acceptor in requestor.peers}
 module "peering-${requestor.id}-${acceptor}" {
-  source = "/Users/jakoberpf/Code/jakoberpf/terraform/modules/oracle/peering-local"
+  source = "jakoberpf/peering-local/oracle"
   providers = {
     oci.requestor = oci.${requestor.id}
     oci.acceptor = oci.${acceptor}
