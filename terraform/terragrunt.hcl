@@ -1,9 +1,9 @@
 locals {
-  vars = jsondecode(file("terragrunt.json"))
   vars_yaml = yamldecode(file("terragrunt.yaml"))
-  oci_credentials = local.vars.oci_credentials
+  ssh = local.vars_yaml.ssh
+  oci_credentials = local.vars_yaml.oci
   cloudflare_credentials = local.vars_yaml.cloudflare
-  authorized_keys = local.vars_yaml.ssh.public_key
+  terraform = local.vars_yaml.terraform
 }
 
 terraform {
@@ -25,12 +25,12 @@ generate "backend" {
   contents = <<EOF
 terraform {
   backend "s3" {
-    bucket         = "${local.vars_yaml.terraform.backend.bucket}"
-    key            = "${local.vars_yaml.terraform.backend.key}"
-    region         = "${local.vars_yaml.terraform.backend.region}"
+    bucket         = "${local.terraform.backend.bucket}"
+    key            = "${local.terraform.backend.key}"
+    region         = "${local.terraform.backend.region}"
     encrypt        = true
-    kms_key_id     = "${local.vars_yaml.terraform.backend.kms_key_id}"
-    dynamodb_table = "${local.vars_yaml.terraform.backend.dynamodb_table}"
+    kms_key_id     = "${local.terraform.backend.kms_key_id}"
+    dynamodb_table = "${local.terraform.backend.dynamodb_table}"
   }
   required_providers {
     oci = {
@@ -162,7 +162,7 @@ module "node-${tenancy.id}" {
   compartment_id                  = oci_identity_compartment.compartment-${tenancy.id}.id
   subnet_id                       = module.vnc-${tenancy.id}.public_subnet_ids[${tenancy.availability_domains_placement - 1}]
   availability_domain             = "${tenancy.availability_domains[tenancy.availability_domains_placement - 1]}"
-  ssh_authorized_keys             = var.authorized_keys # "${local.authorized_keys}"
+  ssh_authorized_keys             = var.authorized_keys # "${local.ssh.public_key}"
 
   depends_on = [
     module.vnc-${tenancy.id}
