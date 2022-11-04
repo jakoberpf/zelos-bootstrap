@@ -12,7 +12,6 @@ crash.log
 # Ignore generated terragrunt files and configuration files
 *generated.*.tf
 *backend.conf
-*terragrunt.json
 *terragrunt.yaml
 
 # Ignore override files as they are usually used to override resources locally and so

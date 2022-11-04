@@ -10,6 +10,3 @@ sops --encrypt .oci/jakob.pem > .oci/jakob.pem.enc
 sops --encrypt .oci/tanja.pem > .oci/tanja.pem.enc
 sops --encrypt .oci/tobias.pem > .oci/tobias.pem.enc
 sops --encrypt .oci/ulrike.pem > .oci/ulrike.pem.enc
-
-sops --encrypt .ssh/automation > .ssh/automation.enc
-sops --encrypt .ssh/automation.pub > .ssh/automation.pub.enc

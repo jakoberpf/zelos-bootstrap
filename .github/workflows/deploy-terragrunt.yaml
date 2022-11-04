@@ -33,8 +33,8 @@ jobs:
 
       - name: 'Decrypt secrets'
         run: |
-          ./bin/sops-decrypt.sh
-          cd terraform && ls
+          ./bin/secrets-decrypt.sh
+          ./bin/secrets-setup.sh
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
