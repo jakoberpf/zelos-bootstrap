@@ -48,6 +48,14 @@ jobs:
         with:
           terraform_version: ${{ env.tf_version }}
 
+      - name: Get Cached Terraform Generated Files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-generated
+        with:
+          path: terraform/bin/generated
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: 'Terragrunt Init'
         run: |
           cd ${{ env.tf_working_dir }} && terragrunt init
@@ -71,3 +79,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: 'Terragrunt Apply'
+        run: |
+          cd ${{ env.tf_working_dir }} && terragrunt apply
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Cache Terraform Generated Files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-generated
+        with:
+          path: terraform/bin/generated
+          key: ${{ runner.os }}-${{ env.cache-name }}
