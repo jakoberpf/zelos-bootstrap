@@ -1,8 +1,9 @@
 locals {
   vars = jsondecode(file("terragrunt.json"))
+  vars_yaml = yamldecode(file("terragrunt.yaml"))
   oci_credentials = local.vars.oci_credentials
-  cloudflare_credentials = local.vars.cloudflare_credentials
-  authorized_keys = local.vars.authorized_keys
+  cloudflare_credentials = local.vars_yaml.cloudflare
+  authorized_keys = local.vars_yaml.ssh.public_key
 }
 
 terraform {
@@ -16,6 +17,31 @@ terraform {
     ]
     required_var_files = ["${get_parent_terragrunt_dir()}/variables.tfvars"]
   }
+}
+
+generate "backend" {
+  path      = "generated.backend.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+terraform {
+  backend "s3" {
+    bucket         = "${local.vars_yaml.terraform.backend.bucket}"
+    key            = "${local.vars_yaml.terraform.backend.key}"
+    region         = "${local.vars_yaml.terraform.backend.region}"
+    encrypt        = true
+    kms_key_id     = "${local.vars_yaml.terraform.backend.kms_key_id}"
+    dynamodb_table = "${local.vars_yaml.terraform.backend.dynamodb_table}"
+  }
+  required_providers {
+    oci = {
+      source = "hashicorp/oci"
+    }
+    cloudflare = {
+      source = "cloudflare/cloudflare"
+    }
+  }
+}
+EOF
 }
 
 generate "provider" {

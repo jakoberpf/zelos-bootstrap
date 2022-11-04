@@ -2,8 +2,8 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
-sops --decrypt terraform/backend.conf.enc > terraform/backend.conf
 sops --output-type json --decrypt terraform/terragrunt.json.enc > terraform/terragrunt.json
+sops --decrypt terraform/terragrunt.yaml.enc > terraform/terragrunt.yaml
 sops --decrypt terraform/variables.tfvars.enc > terraform/variables.tfvars
 
 sops --decrypt .oci/fabian.pem.enc > .oci/fabian.pem
