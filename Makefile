@@ -1,4 +1,4 @@
-all: banner tooling
+all: banner
 
 banner:
 	@echo "################################################################"
@@ -36,17 +36,20 @@ terraform.apply.force: all
 	@echo "[terraform] Creating cluster infrastructure with terraform by bruceforce"
 	@./bin/terraform-apply.sh --loop
 
-terraform.post: all terraform
+terraform.post: all
 	@echo "[terraform] Postprocessing terraform infrastructure"
 	@./bin/generated/peering.sh
 
 kubespray: all
-	@echo "[kubespray] Creating cluster with kubespray"
+	@echo "[kubespray] Bootstrap cluster with kubespray"
 	@./bin/kubespray.sh
 
-deploy: terraform terraform.post kubespray
-	@echo "[kubespray] Creating cluster with kubespray"
+kubespray.post: all
+	@echo "[kubespray] Postprocessing kubespray bootstrapping"
+
+deploy: terraform terraform.post kubespray kubespray.post
+	@echo "[kubespray] Deploy OCI Kubernetes Cluster"
 
 destroy: all
-	@echo "[bootstrap] Destroying cluster infrastructure"
-	@cd terraform && terraform destroy -var-file="variables.tfvars"
+	@echo "[bootstrap] Destroying OCI Kubernetes Cluster"
+	@echo -n "Are you sure? [y/N] " && read ans && if [ $${ans:-'N'} = 'y' ]; then cd terraform && terraform destroy -var-file="variables.tfvars"; fi
