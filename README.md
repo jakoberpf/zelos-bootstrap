@@ -18,11 +18,13 @@ make <command>
 
 and mainly include:
 
-- `tooling`: Will setup all required tools like ansible, vault, terraform and terragrunt.
-- `vault`: Will pull all required secrets from the defined vault instance. ***TODO*** Make this optional, as local secrets could be provided.
+- `tooling`: Will setup all required tools like ansible, terraform and terragrunt.
 - `terraform`: Will generate terraform code with terragrunt and apply the generated definitions.
-  - `force`: Does basically the same as `make terraform`, but will run a force apply instead and this until all resources where created successfully. Is is done to conquer a common `OCI Ampere Instance` issue where when creating instances the apply will fail frequently because the free tier available instances are limited and an error `Out of Host capacity` will occur. So this is simple brute forcing.
-  - `post`: As the terraform apply with generate some script which need to be applied after the resource creations, but are still part of the infrastructure, the `terraform post` step will run all generated scripts.
+  - `init`: Will initialize the terraform code.
+  - `validate`:  Will validate the terraform code.
+  - `apply`: Will apply the terraform code.
+  - `force`: Does basically the same as `make terraform.apply`, but will run a force apply instead and this until all resources where created successfully. Is is done to conquer a common `OCI Ampere Instance` issue where when creating instances the apply will fail frequently because the free tier available instances are limited and an error `Out of Host capacity` will occur. So this is simple brute forcing.
+  - `post`: As the `terraform.apply` process with generate some script which need to be applied after the resource creations, but are still part of the infrastructure, the `terraform.post` step will run all these generated scripts.
 - `kubespray`: Will run the kubespray cluster deployment playbook.
 
 Additionally there is a `deploy` and `destroy` command, which will run the complete process of bootstrapping and destroying the cluster. Be aware that you ***cannot*** recover from the `destroy` command.
