@@ -13,10 +13,6 @@ banner:
 	@echo "##                                                            ##"
 	@echo "################################################################"
 	@echo " 															   "
-	
-tooling: banner
-	@echo "[tooling] Setting up tooling"
-	@./bin/tooling.sh
 
 terraform: all terraform.init terraform.validate terraform.apply
 
@@ -27,6 +23,10 @@ terraform.init: all
 terraform.validate: all
 	@echo "[terraform] Validate cluster infrastructure with terraform"
 	@./bin/terraform-validate.sh
+
+terraform.plan: all
+	@echo "[terraform] Plan cluster infrastructure with terraform"
+	@./bin/terraform-plan.sh
 
 terraform.apply: all
 	@echo "[terraform] Creating cluster infrastructure with terraform"
