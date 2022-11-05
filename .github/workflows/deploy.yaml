@@ -46,6 +46,7 @@ jobs:
         run: |
           ./bin/secrets-decrypt.sh
           ./bin/secrets-setup.sh
+          mv .oci/config ${{ env.GITHUB_WORKSPACE }}/.oci/config
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
@@ -102,8 +103,6 @@ jobs:
       - name: 'Terragrunt post'
         run: |
           make terraform.post
-        env:
-          OCI_CLI_RC_FILE:  ${{ env.GITHUB_WORKSPACE }}/.oci/config
 
       - name: Cache terraform generated files
         uses: actions/cache@v3
