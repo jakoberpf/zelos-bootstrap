@@ -32,64 +32,7 @@ jobs:
           sudo mv age/age /usr/bin/age
           sudo chmod +x /usr/bin/age
 
-      - name: 'Decrypt secrets'
-        run: |
-          ./bin/secrets-decrypt.sh
-          ./bin/secrets-setup.sh
-        env:
-          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-
-      - name: 'Setup Tooling'
-        run: |
-          ./bin/tooling.sh
-
-      - name: 'Setup Terragrunt'
-        uses: autero1/action-terragrunt@v1.2.0
-        with:
-          terragrunt_version: ${{ env.tg_version }}
-
-      - name: 'Setup Terraform'
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.tf_version }}
-
-      - name: Get Cached Terraform Generated Files
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-terraform-generated
-        with:
-          path: bin/generated
-          key: ${{ runner.os }}-${{ env.cache-name }}
-
-      - name: 'Terragrunt Init'
-        run: |
-          make terraform.init
-        env:
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: 'Terragrunt Validate'
-        run: |
-          make terraform.validate
-        env:
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: 'Terragrunt Plan'
-        run: |
-         make terraform.plan
-        env:
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: 'Terragrunt Apply (with force)'
-        run: |
-          make terraform.apply.force
-        env:
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      - name: 'Install OCI CLI'
+      - name: 'Install oci-cli'
         run: |
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
@@ -97,13 +40,70 @@ jobs:
           echo "::add-path::/home/runner/bin"
           exec -l $SHELL
 
-      - name: 'Terragrunt Post'
+      - name: 'Decrypt secrets'
+        run: |
+          ./bin/secrets-decrypt.sh
+          ./bin/secrets-setup.sh
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+      - name: 'Setup tooling'
+        run: |
+          ./bin/tooling.sh
+
+      - name: 'Setup terragrunt'
+        uses: autero1/action-terragrunt@v1.2.0
+        with:
+          terragrunt_version: ${{ env.tg_version }}
+
+      - name: 'Setup terraform'
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.tf_version }}
+
+      - name: Get cached terraform generated files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-generated
+        with:
+          path: bin/generated
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: 'Terragrunt init'
+        run: |
+          make terraform.init
+        env:
+          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: 'Terragrunt validate'
+        run: |
+          make terraform.validate
+        env:
+          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: 'Terragrunt plan'
+        run: |
+         make terraform.plan
+        env:
+          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: 'Terragrunt apply (with force)'
+        run: |
+          make terraform.apply.force
+        env:
+          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: 'Terragrunt post'
         run: |
           make terraform.post
         env:
           OCI_CLI_RC_FILE:  .oci/config
 
-      - name: Cache Terraform Generated Files
+      - name: Cache terraform generated files
         uses: actions/cache@v3
         env:
           cache-name: cache-terraform-generated
@@ -120,11 +120,11 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v1
 
-      # - name: 'Kubespray Deploy'
+      # - name: 'Kubespray deploy'
       #   run: |
       #    make terraform.plan
 
-      # - name: 'Kubespray Post'
+      # - name: 'Kubespray post'
       #   run: |
       #    make terraform.plan
 

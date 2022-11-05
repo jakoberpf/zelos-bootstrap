@@ -23,4 +23,6 @@ do
    oci_region=$(echo "${oci_credentials}" | yq '.region')
    printf "[${oci_id^^}]\nuser=${oci_user}\nfingerprint=${oci_fingerprint}\ntenancy=${oci_tenancy}\nregion=${oci_region}\nkey_file=${PWD}/.oci/keys/${oci_id}.pem\n\n" >> .oci/config
    echo -e $(echo "${oci_credentials}" | yq '.private_key') > .oci/keys/${oci_id}.pem
+   oci setup repair-file-permissions --file .oci/config
+   oci setup repair-file-permissions --file .oci/keys/${oci_id}.pem
 done
