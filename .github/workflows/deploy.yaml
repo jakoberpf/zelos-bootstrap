@@ -39,7 +39,7 @@ jobs:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: 'Setup Terragrunt'
-        uses: autero1/action-terragrunt@v1.1.0
+        uses: autero1/action-terragrunt@v1.2.0
         with:
           terragrunt_version: ${{ env.tg_version }}
 
