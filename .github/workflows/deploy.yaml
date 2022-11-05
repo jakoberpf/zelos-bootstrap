@@ -42,7 +42,6 @@ jobs:
       - name: 'Setup Tooling'
         run: |
           ./bin/tooling.sh
-          bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)"
 
       - name: 'Setup Terragrunt'
         uses: autero1/action-terragrunt@v1.2.0
@@ -89,6 +88,14 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: 'Install OCI CLI'
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "::add-path::/home/runner/bin"
+          exec -l $SHELL
 
       - name: 'Terragrunt Post'
         run: |
