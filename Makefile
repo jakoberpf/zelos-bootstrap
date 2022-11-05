@@ -41,11 +41,14 @@ terraform.post: all
 	@./bin/generated/peering.sh
 
 kubespray: all
+
+kubespray.post: all
 	@echo "[kubespray] Bootstrap cluster with kubespray"
-	@./bin/kubespray.sh
+	@./bin/kubespray-deploy.sh
 
 kubespray.post: all
 	@echo "[kubespray] Postprocessing kubespray bootstrapping"
+	@./bin/kubespray-post.sh
 
 deploy: terraform terraform.post kubespray kubespray.post
 	@echo "[kubespray] Deploy OCI Kubernetes Cluster"
