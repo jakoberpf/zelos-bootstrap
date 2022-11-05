@@ -99,3 +99,10 @@ jobs:
         with:
           path: terraform/bin/generated
           key: ${{ runner.os }}-${{ env.cache-name }}
+
+  kubespray:
+    name: 'Kubespray'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v1
