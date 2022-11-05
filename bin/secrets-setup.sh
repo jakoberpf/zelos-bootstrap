@@ -10,7 +10,7 @@ chmod 600 .ssh/automation
 # Setup OCI credentials
 mkdir -p .oci
 mkdir -p .oci/keys
-rm .oci/config
+rm -f .oci/config
 touch .oci/config
 oci_count=$(yq e -o=j -I=0 '.oci | length' terraform/terragrunt.yaml)
 for (( c=0; c<${oci_count}; c++ ))
