@@ -109,3 +109,5 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v1
+
+# TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
