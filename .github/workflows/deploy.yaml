@@ -58,7 +58,7 @@ jobs:
         env:
           cache-name: cache-terraform-generated
         with:
-          path: terraform/bin/generated
+          path: bin/generated
           key: ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Terragrunt Init'
@@ -98,7 +98,7 @@ jobs:
         env:
           cache-name: cache-terraform-generated
         with:
-          path: terraform/bin/generated
+          path: bin/generated
           key: ${{ runner.os }}-${{ env.cache-name }}
 
   kubespray:
