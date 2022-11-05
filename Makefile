@@ -14,7 +14,7 @@ banner:
 	@echo "################################################################"
 	@echo " 															   "
 
-terraform: all terraform.init terraform.validate terraform.apply
+terraform: all terraform.init terraform.validate terraform.apply terraform.post
 
 terraform.init: all
 	@echo "[terraform] Initializing cluster infrastructure with terraform"
@@ -40,7 +40,7 @@ terraform.post: all
 	@echo "[terraform] Postprocessing terraform infrastructure"
 	@./bin/generated/peering.sh
 
-kubespray: all
+kubespray: all kubespray.deploy kubespray.post
 
 kubespray.post: all
 	@echo "[kubespray] Bootstrap cluster with kubespray"
