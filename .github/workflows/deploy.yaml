@@ -14,6 +14,7 @@ jobs:
   terragrunt:
     name: 'Terragrunt'
     runs-on: ubuntu-latest
+    concurrency: terragrunt
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v1
@@ -103,6 +104,7 @@ jobs:
   kubespray:
     name: 'Kubespray'
     runs-on: ubuntu-latest
+    concurrency: kubespray
     needs: terragrunt
     steps:
       - name: 'Checkout'
