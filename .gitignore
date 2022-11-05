@@ -35,5 +35,6 @@ override.tf.json
 *identity.secret
 *.venv
 *.ssh
+*.oci
 *.pem
 /kubespray/inventory.ini
