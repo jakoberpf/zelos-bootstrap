@@ -42,6 +42,7 @@ jobs:
       - name: 'Setup Tooling'
         run: |
           ./bin/tooling.sh
+          bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)"
 
       - name: 'Setup Terragrunt'
         uses: autero1/action-terragrunt@v1.2.0
