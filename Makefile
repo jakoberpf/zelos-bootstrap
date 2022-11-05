@@ -1,7 +1,6 @@
-# https://makefiletutorial.com/
-all: banner tooling vault # tooling before vault
+all: banner tooling
 
-banner: # Typo: Allogator2 from https://manytools.org/hacker-tools/ascii-banner/
+banner:
 	@echo "################################################################"
 	@echo "##                                                            ##"
 	@echo "##    ::::::::: :::::::::: :::        ::::::::   ::::::::     ##"
@@ -19,17 +18,23 @@ tooling: banner
 	@echo "[tooling] Setting up tooling"
 	@./bin/tooling.sh
 
-vault: banner tooling
-	@echo "[vault] Getting configuration and secrets from Vault"
-	@./bin/vault.sh
+terraform: all terraform.init terraform.validate terraform.apply
 
-terraform: all
+terraform.init: all
+	@echo "[terraform] Initializing cluster infrastructure with terraform"
+	@./bin/terraform-init.sh
+
+terraform.validate: all
+	@echo "[terraform] Validate cluster infrastructure with terraform"
+	@./bin/terraform-validate.sh
+
+terraform.apply: all
 	@echo "[terraform] Creating cluster infrastructure with terraform"
-	@./bin/terraform.sh
+	@./bin/terraform-apply.sh
 
-terraform.force: all
+terraform.apply.force: all
 	@echo "[terraform] Creating cluster infrastructure with terraform by bruceforce"
-	@./bin/terraform.sh --loop
+	@./bin/terraform-apply.sh --loop
 
 terraform.post: all terraform
 	@echo "[terraform] Postprocessing terraform infrastructure"
