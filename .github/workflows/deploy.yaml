@@ -71,6 +71,14 @@ jobs:
           path: bin/generated
           key: ${{ runner.os }}-${{ env.cache-name }}
 
+      - name: 'Get cached terraform generated kubespray inventory'
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-kubespray-inventory
+        with:
+          path: kubespray/inventory.ini
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: 'Terragrunt init'
         run: |
           make terraform.init
