@@ -113,6 +113,14 @@ jobs:
           path: bin/generated
           key: ${{ runner.os }}-${{ env.cache-name }}
 
+      - name: Cache terraform generated kubespray inventory
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-kubespray-inventory
+        with:
+          path: kubespray/inventory.ini
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
   kubespray:
     name: 'Kubespray'
     runs-on: ubuntu-latest
@@ -122,12 +130,24 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v1
 
+      - name: 'Get cached terraform generated kubespray inventory'
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-kubespray-inventory
+        with:
+          path: kubespray/inventory.ini
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: 'Show kubespray inventory'
+        run: |
+         cat kubespray/inventory.ini
+
       # - name: 'Kubespray deploy'
       #   run: |
-      #    make terraform.plan
+      #    make kubespray.deploy
 
       # - name: 'Kubespray post'
       #   run: |
-      #    make terraform.plan
+      #    make kubespray.post
 
 # TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
