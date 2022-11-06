@@ -63,6 +63,14 @@ jobs:
         with:
           terraform_version: ${{ env.tf_version }}
 
+      - name: Get cached terraform generated ssh config
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-generated-ssh-config
+        with:
+          path: .ssh/config
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: Get cached terraform generated files
         uses: actions/cache@v3
         env:
@@ -112,6 +120,14 @@ jobs:
           make terraform.post
         env:
           OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
+
+      - name: Cache terraform generated ssh config
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-generated-ssh-config
+        with:
+          path: .ssh/config
+          key: ${{ runner.os }}-${{ env.cache-name }}
 
       - name: Cache terraform generated files
         uses: actions/cache@v3
