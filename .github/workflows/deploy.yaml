@@ -103,7 +103,7 @@ jobs:
         run: |
           make terraform.post
         env:
-          OCI_CLI_CONFIG_FILE: $GITHUB_WORKSPACE/.oci/config
+          OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
       - name: Cache terraform generated files
         uses: actions/cache@v3
