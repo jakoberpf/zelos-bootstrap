@@ -42,7 +42,7 @@ terraform.post: all
 
 kubespray: all kubespray.deploy kubespray.post
 
-kubespray.post: all
+kubespray.deploy: all
 	@echo "[kubespray] Bootstrap cluster with kubespray"
 	@./bin/kubespray-deploy.sh
 

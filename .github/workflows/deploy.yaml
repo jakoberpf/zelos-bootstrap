@@ -150,9 +150,9 @@ jobs:
         run: |
          cat kubespray/inventory.ini
 
-      # - name: 'Kubespray deploy'
-      #   run: |
-      #    make kubespray.deploy
+      - name: 'Kubespray deploy'
+        run: |
+         make kubespray.deploy
 
       # - name: 'Kubespray post'
       #   run: |
