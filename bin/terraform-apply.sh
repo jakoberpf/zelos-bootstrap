@@ -3,7 +3,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
 # Source python tooling
-source $GIT_ROOT/.venv/bin/activate
+source $GIT_ROOT/.venv/terraform/bin/activate
 
 # Run terraform apply
 cd terraform

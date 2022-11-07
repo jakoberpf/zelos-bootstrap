@@ -192,10 +192,6 @@ jobs:
           path: kubespray/inventory.ini
           key: ${{ runner.os }}-${{ env.cache-name }}
 
-      - name: 'Show kubespray inventory'
-        run: |
-         cat kubespray/inventory.ini
-
       - name: 'Setup tooling'
         run: |
           ./bin/tooling.sh
