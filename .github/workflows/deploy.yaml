@@ -166,10 +166,15 @@ jobs:
         run: |
          cat kubespray/inventory.ini
 
+      - name: Install dependencies Including Ansible
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade netaddr
+          python -m pip install --upgrade ansible==2.10.7
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
       - name: 'Kubespray deploy'
         run: |
-          sudo apt install ansible=2.11
-          python -m pip install netaddr
           make kubespray.clone
           make kubespray.deploy
 
