@@ -168,7 +168,7 @@ jobs:
 
       - name: 'Kubespray deploy'
         run: |
-          docker pull quay.io/kubespray/kubespray
+          make kubespray.clone
           make kubespray.deploy
 
       # - name: 'Kubespray post'

@@ -42,6 +42,9 @@ terraform.post: all
 
 kubespray: all kubespray.deploy kubespray.post
 
+kubespray.clone:
+	@git clone --branch v2.18.1 https://github.com/kubernetes-sigs/kubespray.git .kubespray
+
 kubespray.deploy: all
 	@echo "[kubespray] Bootstrap cluster with kubespray"
 	@./bin/kubespray-deploy.sh

@@ -37,4 +37,5 @@ override.tf.json
 *.ssh
 *.oci
 *.pem
-/kubespray/inventory.ini
+*.kubespray
+*/inventory.ini
