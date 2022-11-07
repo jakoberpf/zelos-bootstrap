@@ -168,7 +168,8 @@ jobs:
 
       - name: 'Kubespray deploy'
         run: |
-         make kubespray.deploy
+          docker
+          make kubespray.deploy
 
       # - name: 'Kubespray post'
       #   run: |
