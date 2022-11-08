@@ -11,13 +11,43 @@ env:
   tf_working_dir: './terraform'
 
 jobs:
+  tooling:
+    name: 'Tooling'
+    runs-on: ubuntu-latest
+    concurrency: tooling
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v1
+
+      - name: 'Setup tooling'
+        run: |
+          ./bin/tooling.sh
+
+      - name: Cache .venv
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-tooling-venv
+        with:
+          path: .venv
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
   terragrunt:
     name: 'Terragrunt'
     runs-on: ubuntu-latest
     concurrency: terragrunt
+    needs: 
+      - tooling
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v1
+
+      - name: Get cached .venv
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-tooling-venv
+        with:
+          path: .venv
+          key: ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Install sops'
         run: |
@@ -48,10 +78,6 @@ jobs:
           ./bin/secrets-setup.sh
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-
-      - name: 'Setup tooling'
-        run: |
-          ./bin/tooling.sh
 
       - name: 'Setup terragrunt'
         uses: autero1/action-terragrunt@v1.2.0
@@ -149,10 +175,20 @@ jobs:
     name: 'Kubespray'
     runs-on: ubuntu-latest
     concurrency: kubespray
-    needs: terragrunt
+    needs: 
+      - tooling
+      - terragrunt
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v1
+
+      - name: Get cached .venv
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-tooling-venv
+        with:
+          path: .venv
+          key: ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Install sops'
         run: |
@@ -191,10 +227,6 @@ jobs:
         with:
           path: kubespray/inventory.ini
           key: ${{ runner.os }}-${{ env.cache-name }}
-
-      - name: 'Setup tooling'
-        run: |
-          ./bin/tooling.sh
 
       - name: 'Kubespray deploy'
         run: |
