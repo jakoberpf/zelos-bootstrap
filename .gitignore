@@ -12,7 +12,10 @@ crash.log
 # Ignore generated terragrunt files and configuration files
 *generated.*.tf
 *backend.conf
-*terragrunt.yaml
+
+# Ignore secret configuration files
+terraform/terragrunt.yaml
+kubespray/kubespray.yaml
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
