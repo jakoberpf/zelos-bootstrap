@@ -44,6 +44,38 @@ terraform {
 EOF
 }
 
+generate "bucket" {
+  path      = "generated.bucket.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+%{for key, content in local.oci_credentials}
+data "oci_objectstorage_namespace" "config_${content.id}" {
+    provider = oci.${content.id}
+    compartment_id = "${content.compartment_ocid}"
+}
+
+resource "oci_objectstorage_bucket" "config_${content.id}" {
+  provider = oci.${content.id}
+
+  access_type           = "NoPublicAccess"
+  auto_tiering          = "InfrequentAccess"
+  compartment_id        = "${content.compartment_ocid}"
+  name                  = "zelos"
+  namespace             = data.oci_objectstorage_namespace.config_${content.id}.namespace
+  object_events_enabled = "false"
+  storage_tier          = "Standard"
+  versioning            = "Disabled"
+
+  freeform_tags = {
+  }
+
+  metadata = {
+  }
+}
+%{endfor}
+EOF
+}
+
 generate "provider" {
   path = "generated.providers.tf"
   if_exists = "overwrite_terragrunt"
