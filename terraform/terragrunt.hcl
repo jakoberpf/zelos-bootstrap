@@ -6,19 +6,6 @@ locals {
   terraform = local.vars_yaml.terraform
 }
 
-terraform {
-    extra_arguments "custom_vars" {
-    commands = [
-      "apply",
-      "plan",
-      "import",
-      "push",
-      "refresh"
-    ]
-    required_var_files = ["${get_parent_terragrunt_dir()}/variables.tfvars"]
-  }
-}
-
 generate "backend" {
   path      = "generated.backend.tf"
   if_exists = "overwrite_terragrunt"
@@ -41,38 +28,6 @@ terraform {
     }
   }
 }
-EOF
-}
-
-generate "bucket" {
-  path      = "generated.bucket.tf"
-  if_exists = "overwrite_terragrunt"
-  contents = <<EOF
-%{for key, content in local.oci_credentials}
-data "oci_objectstorage_namespace" "config_${content.id}" {
-    provider = oci.${content.id}
-    compartment_id = "${content.compartment_ocid}"
-}
-
-resource "oci_objectstorage_bucket" "config_${content.id}" {
-  provider = oci.${content.id}
-
-  access_type           = "NoPublicAccess"
-  auto_tiering          = "InfrequentAccess"
-  compartment_id        = "${content.compartment_ocid}"
-  name                  = "zelos"
-  namespace             = data.oci_objectstorage_namespace.config_${content.id}.namespace
-  object_events_enabled = "false"
-  storage_tier          = "Standard"
-  versioning            = "Disabled"
-
-  freeform_tags = {
-  }
-
-  metadata = {
-  }
-}
-%{endfor}
 EOF
 }
 
@@ -109,6 +64,38 @@ resource "oci_identity_compartment" "compartment-${content.id}" {
     compartment_id = "${content.tenancy_ocid}"
     description = "Compartment for Zelos Cluster Resources."
     name = "Zelos"
+}
+%{endfor}
+EOF
+}
+
+generate "bucket" {
+  path      = "generated.bucket.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+%{for key, content in local.oci_credentials}
+data "oci_objectstorage_namespace" "config_${content.id}" {
+    provider = oci.${content.id}
+    compartment_id = "${content.compartment_ocid}"
+}
+
+resource "oci_objectstorage_bucket" "config_${content.id}" {
+  provider = oci.${content.id}
+
+  access_type           = "NoPublicAccess"
+  auto_tiering          = "InfrequentAccess"
+  compartment_id        = "${content.compartment_ocid}"
+  name                  = "zelos"
+  namespace             = data.oci_objectstorage_namespace.config_${content.id}.namespace
+  object_events_enabled = "false"
+  storage_tier          = "Standard"
+  versioning            = "Disabled"
+
+  freeform_tags = {
+  }
+
+  metadata = {
+  }
 }
 %{endfor}
 EOF
@@ -194,7 +181,7 @@ module "node-${tenancy.id}" {
   compartment_id                  = oci_identity_compartment.compartment-${tenancy.id}.id
   subnet_id                       = module.vnc-${tenancy.id}.public_subnet_ids[${tenancy.availability_domains_placement - 1}]
   availability_domain             = "${tenancy.availability_domains[tenancy.availability_domains_placement - 1]}"
-  ssh_authorized_keys             = var.authorized_keys # "${local.ssh.public_key}"
+  ssh_authorized_keys             = "${local.ssh.public_key}"
 
   depends_on = [
     module.vnc-${tenancy.id}

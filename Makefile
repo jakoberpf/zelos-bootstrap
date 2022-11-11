@@ -1,5 +1,3 @@
-all: banner
-
 banner:
 	@echo "################################################################"
 	@echo "##                                                            ##"
@@ -14,48 +12,48 @@ banner:
 	@echo "################################################################"
 	@echo " 															   "
 
-terraform: all terraform.init terraform.validate terraform.apply terraform.post
+terraform: banner terraform.init terraform.validate terraform.apply terraform.post
 
-terraform.init: all
+terraform.init: banner
 	@echo "[terraform] Initializing cluster infrastructure with terraform"
 	@./bin/terraform-init.sh
 
-terraform.validate: all
+terraform.validate: banner
 	@echo "[terraform] Validate cluster infrastructure with terraform"
 	@./bin/terraform-validate.sh
 
-terraform.plan: all
+terraform.plan: banner
 	@echo "[terraform] Plan cluster infrastructure with terraform"
 	@./bin/terraform-plan.sh
 
-terraform.apply: all
+terraform.apply: banner
 	@echo "[terraform] Creating cluster infrastructure with terraform"
 	@./bin/terraform-apply.sh
 
-terraform.apply.force: all
+terraform.apply.force: banner
 	@echo "[terraform] Creating cluster infrastructure with terraform by bruceforce"
 	@./bin/terraform-apply.sh --loop
 
-terraform.post: all
+terraform.post: banner
 	@echo "[terraform] Postprocessing terraform infrastructure"
 	@./bin/generated/peering.sh
 
-kubespray: all kubespray.deploy kubespray.post
+kubespray: banner kubespray.deploy kubespray.post
 
-kubespray.clone:
+kubespray.clone: banner
 	@git clone --branch v2.18.1 https://github.com/kubernetes-sigs/kubespray.git .kubespray
 
-kubespray.deploy: all
+kubespray.deploy: banner
 	@echo "[kubespray] Bootstrap cluster with kubespray"
 	@./bin/kubespray-deploy.sh
 
-kubespray.post: all
+kubespray.post: banner
 	@echo "[kubespray] Postprocessing kubespray bootstrapping"
 	@./bin/kubespray-post.sh
 
-deploy: terraform terraform.post kubespray kubespray.post
+deploy: terraform kubespray
 	@echo "[kubespray] Deploy OCI Kubernetes Cluster"
 
-destroy: all
+destroy:
 	@echo "[bootstrap] Destroying OCI Kubernetes Cluster"
 	@echo -n "Are you sure? [y/N] " && read ans && if [ $${ans:-'N'} = 'y' ]; then cd terraform && terraform destroy -var-file="variables.tfvars"; fi

@@ -53,3 +53,4 @@ Currently my deployment is managed with a mix of local commands an github terraf
 - TODO Rolling Upgrade with <https://gmusumeci.medium.com/how-to-get-the-latest-os-image-in-oracle-cloud-infrastructure-using-terraform-f53823223968>
 - TODO https://github.com/aws-actions/configure-aws-credentials#assuming-a-role
 - TODO https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+- TODO https://github.com/cameritelabs/oci-emulator

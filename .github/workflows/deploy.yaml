@@ -115,35 +115,35 @@ jobs:
 
       - name: 'Terragrunt init'
         run: |
-          make terraform.init
+          ./bin/terraform-init.sh
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: 'Terragrunt validate'
         run: |
-          make terraform.validate
+          ./bin/terraform-validate.sh
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: 'Terragrunt plan'
         run: |
-         make terraform.plan
+         ./bin/terraform-plan.sh
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: 'Terragrunt apply (with force)'
         run: |
-          make terraform.apply.force
+          ./bin/terraform-apply.sh --loop
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: 'Terragrunt post'
         run: |
-          make terraform.post
+          ./bin/terraform-post.sh
         env:
           OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
@@ -231,7 +231,7 @@ jobs:
       - name: 'Kubespray deploy'
         run: |
           make kubespray.clone
-          make kubespray.deploy
+          ./bin/kubespray-deploy.sh
 
       # - name: 'Kubespray post'
       #   run: |
