@@ -233,9 +233,11 @@ jobs:
         run: |
           make kubespray.clone
           ./bin/kubespray-deploy.sh
+        env:
+          ANSIBLE_TIMEOUT: 120
 
-      # - name: 'Kubespray post'
-      #   run: |
-      #    make kubespray.post
+      - name: 'Kubespray post'
+        run: |
+         ./bin/kubespray-post.sh
 
 # TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
