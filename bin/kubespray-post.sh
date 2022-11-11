@@ -2,6 +2,9 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
+cp $GIT_ROOT/.kubespray/inventory/zelos/artifacts/admin.conf $GIT_ROOT/kubespray/artifacts/admin.conf
+cp $GIT_ROOT/.kubespray/inventory/zelos/credentials/kubeadm_certificate_key.creds $GIT_ROOT/kubespray/credentials/kubeadm_certificate_key.creds
+
 # Refine kubernetes admin config
 config_file="kubespray/artifacts/admin.conf"
 yq -i '.clusters[0].cluster.server = "https://api.zelos.k8s.erpf.de:6443"' $config_file
