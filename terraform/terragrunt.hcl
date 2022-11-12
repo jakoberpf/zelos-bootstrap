@@ -196,17 +196,9 @@ generate "dns" {
   path = "generated.dns.tf"
   if_exists = "overwrite_terragrunt"
   contents = <<EOF
-resource "cloudflare_record" "api" {
+resource "cloudflare_record" "endpoint" {
   zone_id  = "${local.cloudflare_credentials.zone_id}"
-  name     = "api.zelos.k8s.erpf.de"
-  value    = module.node-jakob.public_ip
-  type     = "A"
-  proxied  = false
-}
-
-resource "cloudflare_record" "api" {
-  zone_id  = "${local.cloudflare_credentials.zone_id}"
-  name     = "*.system.zelos.k8s.erpf.de"
+  name     = "*.zelos.k8s.erpf.de"
   value    = module.node-jakob.public_ip
   type     = "A"
   proxied  = false
