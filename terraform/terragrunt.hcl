@@ -204,6 +204,14 @@ resource "cloudflare_record" "api" {
   proxied  = false
 }
 
+resource "cloudflare_record" "api" {
+  zone_id  = "${local.cloudflare_credentials.zone_id}"
+  name     = "*.system.zelos.k8s.erpf.de"
+  value    = module.node-jakob.public_ip
+  type     = "A"
+  proxied  = false
+}
+
 %{for tenancy in local.oci_credentials}
 resource "cloudflare_record" "node-${tenancy.id}" {
   zone_id  = "${local.cloudflare_credentials.zone_id}"
