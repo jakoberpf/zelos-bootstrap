@@ -232,6 +232,7 @@ jobs:
       - name: 'Kubespray deploy'
         run: |
           make kubespray.clone
+          cat kubespray/inventory.ini
           ./bin/kubespray-deploy.sh
         env:
           ANSIBLE_TIMEOUT: 120
