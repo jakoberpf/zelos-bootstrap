@@ -138,6 +138,7 @@ jobs:
       - name: 'Terragrunt apply (with force)'
         run: |
           ./bin/terraform-apply.sh --loop
+          cat kubespray/inventory.ini
         env:
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
