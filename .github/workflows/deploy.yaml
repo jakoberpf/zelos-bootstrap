@@ -30,7 +30,7 @@ jobs:
           cache-name: cache-tooling-venv
         with:
           path: .venv
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
 
   terragrunt:
     name: 'Terragrunt'
@@ -48,7 +48,9 @@ jobs:
           cache-name: cache-tooling-venv
         with:
           path: .venv
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Install sops'
         run: |
@@ -96,7 +98,9 @@ jobs:
           cache-name: cache-terraform-generated-ssh-config
         with:
           path: .ssh/config
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
 
       - name: Get cached terraform generated files
         uses: actions/cache@v3
@@ -104,7 +108,9 @@ jobs:
           cache-name: cache-terraform-generated
         with:
           path: bin/generated
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Get cached terraform generated kubespray inventory'
         uses: actions/cache@v3
@@ -112,7 +118,9 @@ jobs:
           cache-name: cache-terraform-kubespray-inventory
         with:
           path: kubespray/inventory.ini
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Terragrunt init'
         run: |
@@ -155,7 +163,7 @@ jobs:
           cache-name: cache-terraform-generated-ssh-config
         with:
           path: .ssh/config
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
 
       - name: Cache terraform generated files
         uses: actions/cache@v3
@@ -163,7 +171,7 @@ jobs:
           cache-name: cache-terraform-generated
         with:
           path: bin/generated
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
 
       - name: Cache terraform generated kubespray inventory
         uses: actions/cache@v3
@@ -171,7 +179,7 @@ jobs:
           cache-name: cache-terraform-kubespray-inventory
         with:
           path: kubespray/inventory.ini
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
 
   kubespray:
     name: 'Kubespray'
@@ -190,7 +198,19 @@ jobs:
           cache-name: cache-tooling-venv
         with:
           path: .venv
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: 'Get cached terraform generated kubespray inventory'
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-kubespray-inventory
+        with:
+          path: kubespray/inventory.ini
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Install sops'
         run: |
@@ -221,14 +241,6 @@ jobs:
           ./bin/secrets-setup.sh
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-
-      - name: 'Get cached terraform generated kubespray inventory'
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-terraform-kubespray-inventory
-        with:
-          path: kubespray/inventory.ini
-          key: ${{ runner.os }}-${{ env.cache-name }}
 
       - name: 'Kubespray deploy'
         run: |
