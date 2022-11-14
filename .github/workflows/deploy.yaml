@@ -157,30 +157,6 @@ jobs:
         env:
           OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
-      - name: Cache terraform generated ssh config
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-terraform-generated-ssh-config
-        with:
-          path: .ssh/config
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-
-      - name: Cache terraform generated files
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-terraform-generated
-        with:
-          path: bin/generated
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-
-      - name: Cache terraform generated kubespray inventory
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-terraform-kubespray-inventory
-        with:
-          path: kubespray/inventory.ini
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-
   kubespray:
     name: 'Kubespray'
     runs-on: ubuntu-latest
@@ -247,11 +223,11 @@ jobs:
           make kubespray.clone
           cat kubespray/inventory.ini
           ./bin/kubespray-deploy.sh
-        env:
-          ANSIBLE_TIMEOUT: 120
 
       - name: 'Kubespray post'
         run: |
          ./bin/kubespray-post.sh
+        env:
+          OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
 # TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
