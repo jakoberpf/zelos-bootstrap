@@ -6,7 +6,7 @@ This project is the first stage of the zelos kubernetes cluster deployment.
 - [zelos-installer](https://github.com/jakoberpf/zelos-installer)
 - [zelos-configuration](https://github.com/jakoberpf/zelos-configuration)
 
-All resources are part of the oracle free tier (although multiple accounts from my wife and my brother where used). Terraform is used for creating all OCI resources and a bash script will setup a peering connections between the VPCs. Afterwards `kubespray` is used for creating the Kubernetes cluster itself. I am still working on making everything configurable and plug-able, but the idea is that this could be a boilerplate or template for a *free* kubernetes cluster in the cloud with actually usable resources. To my knowledge this does not break any `Term of Use` of Oracle since its actually just one account per individual, as long it is not used for production purposes.
+All resources can be part of the oracle free tier. Terraform is used for creating all OCI resources and a bash script will setup a peering connections between the VPCs. Afterwards `kubespray` is used for creating the Kubernetes cluster itself. I am still working on making everything configurable and plug-able, but the idea is that this could be a boilerplate or template for a *free* kubernetes cluster in the cloud with actually usable resources. To my knowledge this does not break any `Term of Use` of Oracle since its actually just one account per individual, as long it is not used for production purposes.
 
 ## Guide
 
