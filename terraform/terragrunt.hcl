@@ -245,6 +245,46 @@ resource "local_file" "inventory_ansible" {
 EOF
 }
 
+generate "inventory_kubespray" {
+  path = "generated.inventory.kubespray.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+resource "local_file" "inventory_kubespray" {
+  depends_on = [
+    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+  ]
+  content = templatefile("templates/inventory_kubespray.tpl",
+    {
+      masters-ip-public = [
+        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "master" }module.node-${tenancy.id}.public_ip,%{ endif }%{endfor}
+      ]
+      masters-ip-private = [
+        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "master" }module.node-${tenancy.id}.private_ip,%{ endif }%{endfor}
+      ]
+      masters-id = [
+        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "master" }"node-${tenancy.id}",%{ endif }%{endfor}
+      ],
+      masters-user = "ubuntu"
+
+      workers-ip-public = [
+        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }module.node-${tenancy.id}.public_ip,%{ endif }%{endfor}
+      ]
+      workers-ip-private = [
+        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }module.node-${tenancy.id}.private_ip,%{ endif }%{endfor}
+      ]
+      workers-id = [
+        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }"node-${tenancy.id}",%{ endif }%{endfor}
+      ],
+      workers-user = "ubuntu"
+    }
+
+  )
+  filename = "../kubespray/inventory.ini"
+}
+
+EOF
+}
+
 generate "ssh" {
   path = "generated.ssh.tf"
   if_exists = "overwrite_terragrunt"
