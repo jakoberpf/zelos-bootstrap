@@ -38,6 +38,10 @@ terraform.post: banner
 	@echo "[terraform] Postprocessing terraform infrastructure"
 	@./bin/generated/peering.sh
 
+ansible: banner
+	@echo "[ansible] Configuring bootstraped infrastructure"
+	@./bin/ansible-playbook.sh
+
 kubespray: banner kubespray.deploy kubespray.post
 
 kubespray.clone: banner
@@ -51,7 +55,7 @@ kubespray.post: banner
 	@echo "[kubespray] Postprocessing kubespray bootstrapping"
 	@./bin/kubespray-post.sh
 
-deploy: terraform kubespray
+deploy: terraform ansible kubespray
 	@echo "[kubespray] Deploy OCI Kubernetes Cluster"
 
 destroy:
