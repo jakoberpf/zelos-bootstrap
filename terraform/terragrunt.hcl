@@ -217,38 +217,33 @@ resource "cloudflare_record" "node-${tenancy.id}" {
 EOF
 }
 
-// generate "inventory" {
-//   path = "../kubespray/inventory.ini"
-//   if_exists = "overwrite_terragrunt"
-//   contents = <<EOF
-// [all]
-// %{for tenancy in local.oci_credentials}
-// node-${tenancy.id} ansible_host=${tenancy.public_ip} ansible_user=ubuntu etcd_member_name=etcd-${tenancy.id} ip=${tenancy.private_ip}
-// %{endfor}
+generate "inventory_ansible" {
+  path = "generated.inventory.ansible.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+resource "local_file" "inventory_ansible" {
+  depends_on = [
+    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+  ]
+  content = templatefile("templates/inventory_ansible.tpl",
+    {
+      node-ip-public = [
+        %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+      ]
+      node-ip-private = [
+        %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.private_ip,%{endfor}
+      ]
+      node-id = [
+        %{for tenancy in local.oci_credentials}"node-${tenancy.id}",%{endfor}
+      ],
+      node-user = "ubuntu"
+    }
+  )
+  filename = "../ansible/inventory.ini"
+}
 
-// [kube-master]
-// %{for tenancy in local.oci_credentials}
-// node-${tenancy.id}
-// %{endfor}
-
-// [etcd]
-// %{for tenancy in local.oci_credentials}
-// node-${tenancy.id}
-// %{endfor}
-
-// [kube-node]
-// %{for tenancy in local.oci_credentials}
-// node-${tenancy.id}
-// %{endfor}
-
-// [calico_rr]
-
-// [k8s-cluster:children]
-// kube-master
-// kube-node
-// calico_rr
-// EOF
-// }
+EOF
+}
 
 generate "ssh" {
   path = "generated.ssh.tf"
@@ -256,21 +251,15 @@ generate "ssh" {
   contents = <<EOF
 resource "local_file" "ssh" {
   depends_on = [
-    %{for tenancy in local.oci_credentials}
-    module.node-${tenancy.id}.public_ip,
-    %{endfor}
+    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
   ]
   content = templatefile("templates/config.tpl",
   {
     node-ip = [
-        %{for tenancy in local.oci_credentials}
-        module.node-${tenancy.id}.public_ip,
-        %{endfor}
+        %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
     ]
     node-id = [
-        %{for tenancy in local.oci_credentials}
-        "node-${tenancy.id}",
-        %{endfor}
+        %{for tenancy in local.oci_credentials}"node-${tenancy.id}",%{endfor}
     ],
     node-user = "ubuntu",
     node-key = "${get_terragrunt_dir()}/../.ssh/automation"
