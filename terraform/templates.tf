@@ -7,7 +7,7 @@ resource "local_file" "kubespray_inventory" {
     module.node-ulrike.public_ip,
     module.node-tobias.public_ip
   ]
-  content = templatefile("${path.module}/templates/inventory.tpl",
+  content = templatefile("${path.module}/templates/inventory_kubespray.tpl",
     {
       masters-ip-public = [
         module.node-jakob.public_ip,
