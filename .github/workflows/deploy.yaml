@@ -112,6 +112,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}
 
+      - name: 'Get cached terraform generated ansible inventory'
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-ansible-inventory
+        with:
+          path: ansible/inventory.ini
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
+
       - name: 'Get cached terraform generated kubespray inventory'
         uses: actions/cache@v3
         env:
