@@ -202,6 +202,7 @@ resource "cloudflare_record" "endpoint" {
   value    = module.node-jakob.public_ip
   type     = "A"
   proxied  = false
+  ttl      = 60
 }
 
 %{for tenancy in local.oci_credentials}
@@ -211,6 +212,7 @@ resource "cloudflare_record" "node-${tenancy.id}" {
   value    = module.node-${tenancy.id}.public_ip
   type     = "A"
   proxied  = false
+  ttl      = 300
 }
 %{endfor}
 
