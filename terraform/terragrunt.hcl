@@ -199,7 +199,7 @@ generate "dns" {
 resource "cloudflare_record" "endpoint" {
   zone_id  = "${local.cloudflare_credentials.zone_id}"
   name     = "*.zelos.k8s.erpf.de"
-  value    = module.node-jakob.public_ip
+  value    = module.node-fabian.public_ip
   type     = "A"
   proxied  = false
   ttl      = 60
