@@ -167,12 +167,55 @@ jobs:
         env:
           OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
+  ansible:
+    name: 'ansible'
+    runs-on: ubuntu-latest
+    concurrency: ansible
+    needs: 
+      - tooling
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v1
+
+      - name: Get cached .venv
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-tooling-venv
+        with:
+          path: .venv
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: 'Get cached terraform generated ansible inventory'
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-ansible-inventory
+        with:
+          path: ansible/inventory.ini
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: 'Decrypt secrets'
+        run: |
+          ./bin/secrets-decrypt.sh
+          ./bin/secrets-setup.sh
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+      - name: 'Ansible deploy'
+        run: |
+          cat ansible/inventory.ini
+          ./bin/ansible-playbook.sh
+
   kubespray:
     name: 'Kubespray'
     runs-on: ubuntu-latest
     concurrency: kubespray
     needs: 
       - tooling
+      - ansible
       - terragrunt
     steps:
       - name: 'Checkout'
@@ -236,7 +279,7 @@ jobs:
 
       - name: 'Kubespray post'
         run: |
-         ./bin/kubespray-post.sh
+          ./bin/kubespray-post.sh
         env:
           OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
