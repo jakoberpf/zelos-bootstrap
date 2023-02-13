@@ -191,6 +191,16 @@ jobs:
           sudo mv age/age /usr/bin/age
           sudo chmod +x /usr/bin/age
 
+      - name: 'Install oci-cli'
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "::add-path::/home/runner/bin"
+          exec -l $SHELL
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
       - name: Get cached .venv
         uses: actions/cache@v3
         env:
