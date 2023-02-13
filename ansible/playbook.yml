@@ -5,21 +5,21 @@
     ansible_ssh_private_key_file: "../.ssh/automation"
   become: true
   tasks:
-    - name: Install HAProxy
-      apt:
-        name: haproxy
-        state: present
-    - name: Configure HAProxy
-      template:
-        src: templates/haproxy.cfg.j2
-        dest: /etc/haproxy/haproxy.cfg
-        owner: root
-        group: root
-        mode: 0644
-    - name: Restart HAProxy
-      service:
-        name: haproxy
-        state: restarted
+    # - name: Install HAProxy
+    #   apt:
+    #     name: haproxy
+    #     state: present
+    # - name: Configure HAProxy
+    #   template:
+    #     src: templates/haproxy.cfg.j2
+    #     dest: /etc/haproxy/haproxy.cfg
+    #     owner: root
+    #     group: root
+    #     mode: 0644
+    # - name: Restart HAProxy
+    #   service:
+    #     name: haproxy
+    #     state: restarted
     # - name: Allow tpc connections on relevant ports
     #   ansible.builtin.iptables:
     #     chain: INPUT
