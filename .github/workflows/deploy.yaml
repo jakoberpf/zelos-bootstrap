@@ -168,11 +168,12 @@ jobs:
           OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
   ansible:
-    name: 'ansible'
+    name: 'Ansible'
     runs-on: ubuntu-latest
     concurrency: ansible
     needs: 
       - tooling
+      - terragrunt
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v1
