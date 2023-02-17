@@ -1,0 +1,3 @@
+dns:
+  apiNode: node-jakob
+  ingressNode: node-jakob

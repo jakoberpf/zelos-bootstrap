@@ -4,6 +4,7 @@ locals {
   oci_credentials = local.vars_yaml.oci
   cloudflare_credentials = local.vars_yaml.cloudflare
   terraform = local.vars_yaml.terraform
+  vars_dynamic_yaml = yamldecode(file("dynamic.yaml"))
 }
 
 generate "backend" {
