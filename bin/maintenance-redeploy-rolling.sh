@@ -9,12 +9,14 @@ echo ${ids[-1]}
 for i in $ids
 do
     echo "Redeploying node-$i"
-    ./bin/terraform-set-dynamic.sh -n $i
-
-    # TODO run terraform to apply new dns
-    # TODO drain node with timeout 60 kubectl drain --ignore-daemonsets --delete-emptydir-data "node-$i"
-    # TODO run kubespray to remove node from cluster https://www.techbeatly.com/remove-nodes-from-kubespray-managed-kubernetes-cluster/
-    # TODO run terraform taint module.node-$i.oci_core_instance.this to taint instance
-    # TODO run terraform apply to recreate instance
-    # TODO run kubespray to add node to cluster
+    $GIT_ROOT/bin/terraform-set-dynamic.sh -n $i
+    # $GIT_ROOT/bin/terraform-apply.sh --loop
+    # timeout 60 kubectl drain --ignore-daemonsets --delete-emptydir-data "node-$i"
+    # timeout 120 $GIT_ROOT/bin/kubespray-remove-node.sh "node-$i"
+    # timeout 60 kubectl delete node "node-$i"
+    # cd terraform && terraform taint module.node-$i.oci_core_instance.this && cd ../
+    # $GIT_ROOT/bin/terraform-apply.sh --loop
+    # sleep 120
+    # $GIT_ROOT/bin/ansible-playbook.sh
+    # $GIT_ROOT/bin/kubespray-deploy.sh
 done
