@@ -9,14 +9,14 @@ python3 -m venv .venv/kubespray
 source .venv/terraform/bin/activate
 python -m pip install --upgrade pip
 python -m pip install --upgrade checkov
-python -m pip install --upgrade ansible==6.5.0
-ansible-galaxy install caddy_ansible.caddy_ansible,v3.1.0 --force
 
 source .venv/ansible/bin/activate
 python -m pip install --upgrade pip
-python -m pip install --upgrade ansible==6.5.0
+python -m pip install --upgrade ansible
 
 source .venv/kubespray/bin/activate
 python -m pip install --upgrade pip
-python -m pip install --upgrade netaddr
-python -m pip install --upgrade ansible==2.10.7
+python -m pip install --upgrade netaddr==0.7.19
+python -m pip install --upgrade jmespath==0.9.5
+python -m pip install --upgrade ansible==5.7.1
+python -m pip install --upgrade ansible-core==2.12.5

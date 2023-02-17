@@ -45,6 +45,15 @@ Please refer to the documentation of kubespray for detailed information.
 
 Currently my deployment is managed with a mix of local commands an github terraform pipelines. This needs to be refined before publishing.
 
+#### Redeployment - Rolling
+
+For each node to be replaced we want to first drain the node safely and then recreate the node by tainting the instance.
+
+````bash
+kubectl drain --ignore-daemonsets --delete-emptydir-data <node-namw>
+terraform taint module.<node-namw>.oci_core_instance.this
+````
+
 **Development-Notes**
 
 - OCI Kubernetes Configuration Guide [oracle.github.io](https://oracle.github.io/cluster-api-provider-oci/networking/calico.html)
@@ -54,3 +63,6 @@ Currently my deployment is managed with a mix of local commands an github terraf
 - TODO https://github.com/aws-actions/configure-aws-credentials#assuming-a-role
 - TODO https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
 - TODO https://github.com/cameritelabs/oci-emulator
+
+https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/importingcustomimagelinux.htm
+https://www.talos.dev/v1.3/talos-guides/install/cloud-platforms/oracle/
