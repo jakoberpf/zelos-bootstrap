@@ -45,7 +45,7 @@ ansible: banner
 kubespray: banner kubespray.deploy kubespray.post
 
 kubespray.clone: banner
-	@git clone --branch v2.18.1 https://github.com/kubernetes-sigs/kubespray.git .kubespray
+	@git clone --branch v2.21.0 https://github.com/kubernetes-sigs/kubespray.git .kubespray
 
 kubespray.deploy: banner
 	@echo "[kubespray] Bootstrap cluster with kubespray"
