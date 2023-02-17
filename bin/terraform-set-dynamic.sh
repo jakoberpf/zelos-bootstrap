@@ -18,5 +18,7 @@ while getopts 'n:' flag; do
 done
 
 echo "Setting apiNode to ${nodename}"
-
 nodename="node-$nodename" yq -i '.dns.apiNode = env(nodename)' terraform/dynamic.yaml
+
+echo "Setting ingressNode to ${nodename}"
+nodename="node-$nodename" yq -i '.dns.ingressNode = env(nodename)' terraform/dynamic.yaml
