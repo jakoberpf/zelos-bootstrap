@@ -60,9 +60,9 @@ terraform taint module.<node-namw>.oci_core_instance.this
 - OCI Networking does not allow IP-in-IP or IPIP (93) protocol in local peering which is why we are using calicos XVLAN implementation [stackoverflow.com](https://stackoverflow.com/questions/53247682/kubernetes-calico-on-oracle-cloud-vms)
 - Calico <https://projectcalico.docs.tigera.io/getting-started/kubernetes/requirements>
 - TODO Rolling Upgrade with <https://gmusumeci.medium.com/how-to-get-the-latest-os-image-in-oracle-cloud-infrastructure-using-terraform-f53823223968>
-- TODO https://github.com/aws-actions/configure-aws-credentials#assuming-a-role
-- TODO https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
-- TODO https://github.com/cameritelabs/oci-emulator
-
-https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/importingcustomimagelinux.htm
-https://www.talos.dev/v1.3/talos-guides/install/cloud-platforms/oracle/
+- TODO <https://github.com/aws-actions/configure-aws-credentials#assuming-a-role>
+- TODO <https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services>
+- TODO <https://github.com/cameritelabs/oci-emulator>
+- TODO <https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/importingcustomimagelinux.htm>
+- TODO <https://www.talos.dev/v1.3/talos-guides/install/cloud-platforms/oracle/>
+- TODO <https://docs.ansible.com/ansible/latest/collections/ansible/builtin/iptables_module.html>
