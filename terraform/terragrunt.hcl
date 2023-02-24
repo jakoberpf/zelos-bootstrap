@@ -2,6 +2,7 @@ locals {
   vars_yaml = yamldecode(file("terragrunt.yaml"))
   ssh = local.vars_yaml.ssh
   oci_credentials = local.vars_yaml.oci
+  strato_credentials = local.vars_yaml.strato
   cloudflare_credentials = local.vars_yaml.cloudflare
   terraform = local.vars_yaml.terraform
   vars_dynamic_yaml = yamldecode(file("dynamic.yaml"))
@@ -217,6 +218,17 @@ resource "cloudflare_record" "node-${tenancy.id}" {
 }
 %{endfor}
 
+%{for server in local.strato_credentials}
+resource "cloudflare_record" "node-${server.id}" {
+  zone_id  = "${local.cloudflare_credentials.zone_id}"
+  name     = "${server.id}.nodes.zelos.k8s.erpf.de"
+  value    = "${server.ip}"
+  type     = "A"
+  proxied  = false
+  ttl      = 300
+}
+%{endfor}
+
 EOF
 }
 
@@ -232,14 +244,20 @@ resource "local_file" "inventory_ansible" {
     {
       node-ip-public = [
         %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
       ]
       node-ip-private = [
         %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.private_ip,%{endfor}
+        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
       ]
       node-id = [
         %{for tenancy in local.oci_credentials}"node-${tenancy.id}",%{endfor}
+        %{for server in local.strato_credentials}"${server.id}"%{endfor}
       ],
-      node-user = "ubuntu"
+      node-user = [
+        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
+        %{for server in local.strato_credentials}"root"%{endfor}
+      ]
     }
   )
   filename = "../ansible/inventory.ini"
@@ -267,18 +285,26 @@ resource "local_file" "inventory_kubespray" {
       masters-id = [
         %{for tenancy in local.oci_credentials}%{ if tenancy.role == "master" }"node-${tenancy.id}",%{ endif }%{endfor}
       ],
-      masters-user = "ubuntu"
+      masters-user = [
+        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
+      ]
 
       workers-ip-public = [
         %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }module.node-${tenancy.id}.public_ip,%{ endif }%{endfor}
+        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
       ]
       workers-ip-private = [
         %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }module.node-${tenancy.id}.private_ip,%{ endif }%{endfor}
+        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
       ]
       workers-id = [
         %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }"node-${tenancy.id}",%{ endif }%{endfor}
+        %{for server in local.strato_credentials}"${server.id}"%{endfor}
       ],
-      workers-user = "ubuntu"
+      workers-user = [
+        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }"ubuntu",%{ endif }%{endfor}
+        %{for server in local.strato_credentials}"root"%{endfor}
+      ]
     }
 
   )
@@ -300,11 +326,16 @@ resource "local_file" "ssh" {
   {
     node-ip = [
         %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
     ]
     node-id = [
         %{for tenancy in local.oci_credentials}"node-${tenancy.id}",%{endfor}
+        %{for server in local.strato_credentials}"${server.id}"%{endfor}
     ],
-    node-user = "ubuntu",
+    node-user = [
+        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
+        %{for server in local.strato_credentials}"root"%{endfor}
+    ],
     node-key = "${get_terragrunt_dir()}/../.ssh/automation"
   }
  )
