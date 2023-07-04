@@ -173,6 +173,7 @@ generate "nodes" {
 %{for tenancy in local.oci_credentials}
 module "node-${tenancy.id}" {
   source = "jakoberpf/kubernetes-node/oracle"
+  version = "0.0.6"
   providers = {
     oci = oci.${tenancy.id}
   }
