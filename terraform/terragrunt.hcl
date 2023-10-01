@@ -1,17 +1,17 @@
 locals {
-  vars_yaml = yamldecode(file("terragrunt.yaml"))
-  ssh = local.vars_yaml.ssh
-  oci_credentials = local.vars_yaml.oci
-  strato_credentials = local.vars_yaml.strato
+  vars_yaml              = yamldecode(file("terragrunt.yaml"))
+  ssh                    = local.vars_yaml.ssh
+  oci_credentials        = local.vars_yaml.oci
+  strato_credentials     = local.vars_yaml.strato
   cloudflare_credentials = local.vars_yaml.cloudflare
-  terraform = local.vars_yaml.terraform
-  vars_dynamic_yaml = yamldecode(file("dynamic.yaml"))
+  terraform              = local.vars_yaml.terraform
+  vars_dynamic_yaml      = yamldecode(file("dynamic.yaml"))
 }
 
 generate "backend" {
   path      = "generated.backend.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 terraform {
   backend "s3" {
     bucket         = "${local.terraform.backend.bucket}"
@@ -34,9 +34,9 @@ EOF
 }
 
 generate "provider" {
-  path = "generated.providers.tf"
+  path      = "generated.providers.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 %{for key, content in local.oci_credentials}
 provider "oci" {
   alias            = "${content.id}"
@@ -57,9 +57,9 @@ EOF
 }
 
 generate "compartments" {
-  path = "generated.compartments.tf"
+  path      = "generated.compartments.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 %{for key, content in local.oci_credentials}
 resource "oci_identity_compartment" "compartment-${content.id}" {
     provider = oci.${content.id}
@@ -74,7 +74,7 @@ EOF
 generate "bucket" {
   path      = "generated.bucket.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 %{for key, content in local.oci_credentials}
 data "oci_objectstorage_namespace" "config_${content.id}" {
     provider = oci.${content.id}
@@ -104,9 +104,9 @@ EOF
 }
 
 generate "vnc" {
-  path = "generated.vnc.tf"
+  path      = "generated.vnc.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 %{for key, content in local.oci_credentials}
 module "vnc-${content.id}" {
   source = "jakoberpf/base-vpc/oracle"
@@ -129,9 +129,9 @@ EOF
 }
 
 generate "peering" {
-  path = "generated.peering.tf"
+  path      = "generated.peering.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 %{for requestor in local.oci_credentials}%{for acceptor in requestor.peers}
 module "peering-${requestor.id}-${acceptor}" {
   source = "jakoberpf/peering-local/oracle"
@@ -167,13 +167,13 @@ EOF
 }
 
 generate "nodes" {
-  path = "generated.nodes.tf"
+  path      = "generated.nodes.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 %{for tenancy in local.oci_credentials}
 module "node-${tenancy.id}" {
   source = "jakoberpf/kubernetes-node/oracle"
-  version = "0.0.6"
+  version = "0.0.7"
   providers = {
     oci = oci.${tenancy.id}
   }
@@ -186,6 +186,66 @@ module "node-${tenancy.id}" {
   availability_domain             = "${tenancy.availability_domains[tenancy.availability_domains_placement - 1]}"
   ssh_authorized_keys             = "${local.ssh.public_key}"
 
+  security_group_ports_kubernetes = {
+    "LOCAL_DNS_CACHE_TCP" = {
+      port_max    = 53
+      port_min    = 53
+      protocol    = 6
+      description = "LOCAL_DNS_CACHE_TCP"
+    }
+    "CALICO_BGP" = {
+      port_max    = 179
+      port_min    = 179
+      protocol    = 6
+      description = "CALICO_BGP"
+    }
+    "ETCD" = {
+      port_max    = 2380
+      port_min    = 2379
+      protocol    = 6
+      description = "ETCD"
+    }
+    "CILIUM_HEALTH_CHECKS" = {
+      port_max    = 4240
+      port_min    = 4240
+      protocol    = 6
+      description = "CILIUM_HEALTH_CHECKS"
+    }
+    "KUBE_API" = {
+      port_max    = 6443
+      port_min    = 6443
+      protocol    = 6
+      description = "KUBE_API"
+    }
+    "KUBELET" = {
+      port_max    = 10250
+      port_min    = 10250
+      protocol    = 6
+      description = "KUBELET"
+    }
+  }
+
+  security_group_ports_applications = {
+    "NETMAKER_MQTT" = {
+      port_max    = 1883
+      port_min    = 1883
+      protocol    = 6
+      description = "NETMAKER_MQTT"
+    }
+    "NETMAKER_MQTT2" = {
+      port_max    = 8883
+      port_min    = 8883
+      protocol    = 6
+      description = "NETMAKER_MQTT2"
+    }
+    "NETMAKER_WIREGUARD" = {
+      port_max    = 31830
+      port_min    = 31821
+      protocol    = 6
+      description = "NETMAKER_WIREGUARD"
+    }
+  }
+
   depends_on = [
     module.vnc-${tenancy.id}
   ]
@@ -195,10 +255,24 @@ module "node-${tenancy.id}" {
 EOF
 }
 
+/* "CILIUM_VXLAN_OVERLAY" = {
+  port_max    = 8472
+  port_min    = 8472
+  protocol    = 17
+  description = "CILIUM_VXLAN_OVERLAY"
+} */
+
+/* "LOCAL_DNS_CACHE_UPD" = {
+  port_max    = 53
+  port_min    = 53
+  protocol    = 17
+  description = "LOCAL_DNS_CACHE_UPD"
+} */
+
 generate "dns" {
-  path = "generated.dns.tf"
+  path      = "generated.dns.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 resource "cloudflare_record" "endpoint" {
   zone_id  = "${local.cloudflare_credentials.zone_id}"
   name     = "*.zelos.k8s.erpf.de"
@@ -234,9 +308,9 @@ EOF
 }
 
 generate "inventory_ansible" {
-  path = "generated.inventory.ansible.tf"
+  path      = "generated.inventory.ansible.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 resource "local_file" "inventory_ansible" {
   depends_on = [
     %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
@@ -268,9 +342,9 @@ EOF
 }
 
 generate "inventory_kubespray" {
-  path = "generated.inventory.kubespray.tf"
+  path      = "generated.inventory.kubespray.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 resource "local_file" "inventory_kubespray" {
   depends_on = [
     %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
@@ -278,32 +352,32 @@ resource "local_file" "inventory_kubespray" {
   content = templatefile("templates/inventory_kubespray.tpl",
     {
       masters-ip-public = [
-        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "master" }module.node-${tenancy.id}.public_ip,%{ endif }%{endfor}
+        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
       ]
       masters-ip-private = [
-        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "master" }module.node-${tenancy.id}.private_ip,%{ endif }%{endfor}
+        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
       ]
       masters-id = [
-        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "master" }"node-${tenancy.id}",%{ endif }%{endfor}
+        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}"node-${tenancy.id}",%{endif}%{endfor}
       ],
       masters-user = [
         %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
       ]
 
       workers-ip-public = [
-        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }module.node-${tenancy.id}.public_ip,%{ endif }%{endfor}
+        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
         %{for server in local.strato_credentials}"${server.ip}"%{endfor}
       ]
       workers-ip-private = [
-        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }module.node-${tenancy.id}.private_ip,%{ endif }%{endfor}
+        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
         %{for server in local.strato_credentials}"${server.ip}"%{endfor}
       ]
       workers-id = [
-        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }"node-${tenancy.id}",%{ endif }%{endfor}
+        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}"node-${tenancy.id}",%{endif}%{endfor}
         %{for server in local.strato_credentials}"${server.id}"%{endfor}
       ],
       workers-user = [
-        %{for tenancy in local.oci_credentials}%{ if tenancy.role == "worker" }"ubuntu",%{ endif }%{endfor}
+        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}"ubuntu",%{endif}%{endfor}
         %{for server in local.strato_credentials}"root"%{endfor}
       ]
     }
@@ -316,9 +390,9 @@ EOF
 }
 
 generate "ssh" {
-  path = "generated.ssh.tf"
+  path      = "generated.ssh.tf"
   if_exists = "overwrite_terragrunt"
-  contents = <<EOF
+  contents  = <<EOF
 resource "local_file" "ssh" {
   depends_on = [
     %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
