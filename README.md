@@ -1,5 +1,9 @@
 # zelos-bootstrap
 
+TODO https://discuss.hashicorp.com/t/store-and-read-ssh-pvt-keys-from-the-vault/39414/12
+TODO https://www.scaleway.com/en/docs/tutorials/wireguard-mesh-vpn/
+TODO https://github.com/cameritelabs/oci-emulator
+
 This project is the first stage of the zelos kubernetes cluster deployment.
 
 - [***zelos-bootstrap***](https://github.com/jakoberpf/zelos-bootstrap)
