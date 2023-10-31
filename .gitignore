@@ -43,3 +43,4 @@ override.tf.json
 *.kubespray
 */inventory.ini
 /.idea
+/velero/credentials-velero

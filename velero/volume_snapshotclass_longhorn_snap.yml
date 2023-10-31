@@ -1,0 +1,9 @@
+# CSI VolumeSnapshot Associated With Longhorn Backup
+kind: VolumeSnapshotClass
+apiVersion: snapshot.storage.k8s.io/v1
+metadata:
+  name: longhorn-backup
+driver: driver.longhorn.io
+deletionPolicy: Delete
+parameters:
+  type: bak
