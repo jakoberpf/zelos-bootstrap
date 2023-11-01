@@ -12,9 +12,6 @@ ${id}
 %{ endfor ~}
 
 [k3s_node]
-%{ for index, id in masters-id ~}
-${id}
-%{ endfor ~}
 %{ for index, id in workers-id ~}
 ${id}
 %{ endfor ~}
