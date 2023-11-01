@@ -185,9 +185,9 @@ module "node-${tenancy.id}" {
   availability_domain             = "${tenancy.availability_domains[tenancy.availability_domains_placement - 1]}"
   ssh_authorized_keys             = "${local.ssh.public_key}"
 
-  instance_ocpus = 2
-  instance_memory = 12
-  boot_volume_size_in_gbs = 100
+  instance_ocpus = 4
+  instance_memory = 24
+  boot_volume_size_in_gbs = 200
 
   security_group_ports_kubernetes = {
     "LOCAL_DNS_CACHE_TCP" = {
@@ -362,7 +362,7 @@ resource "local_file" "ssh" {
     node-user = [
         %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
     ],
-    node-key = "${get_terragrunt_dir()}/../.ssh/automation"
+    node-key = "${get_terragrunt_dir()}/../../.ssh/automation"
   }
  )
  filename = "$${path.module}/generated/config"
