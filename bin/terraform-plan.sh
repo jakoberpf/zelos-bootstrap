@@ -3,5 +3,5 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
 # Run terragrunt plan
-cd terraform
+cd terraform/$1
 terragrunt plan

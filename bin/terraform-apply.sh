@@ -6,7 +6,7 @@ cd $GIT_ROOT
 source $GIT_ROOT/.venv/terraform/bin/activate
 
 # Run terraform apply
-cd terraform
+cd terraform/$1
 if [[ $* == *--loop* ]]; then
   start=`date +%s`
   until terragrunt apply -auto-approve # | grep -q 'Out of host capacity'
