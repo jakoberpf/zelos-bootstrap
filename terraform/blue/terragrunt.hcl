@@ -1,6 +1,7 @@
 locals {
   vars_yaml              = yamldecode(file("terragrunt.yaml"))
   ssh                    = local.vars_yaml.ssh
+  instances              = local.vars_yaml.instances
   oci_credentials        = local.vars_yaml.oci
   cloudflare_credentials = local.vars_yaml.cloudflare
   terraform              = local.vars_yaml.terraform
@@ -59,10 +60,10 @@ generate "compartments" {
   path      = "generated.compartments.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-%{for key, content in local.oci_credentials}
+%{for key, content in local.instances}
 resource "oci_identity_compartment" "compartment-${content.id}" {
-    provider = oci.${content.id}
-    compartment_id = "${content.tenancy_ocid}"
+    provider = oci.${content.provider}
+    compartment_id = "${local.oci_credentials[index(local.oci_credentials.*.id, "${content.provider}")].tenancy_ocid}"
     description = "Compartment for Zelos Cluster Resources."
     name = "zelos-${content.id}"
 }
@@ -74,18 +75,18 @@ generate "bucket" {
   path      = "generated.bucket.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-%{for key, content in local.oci_credentials}
+%{for key, content in local.instances}
 data "oci_objectstorage_namespace" "config_${content.id}" {
-    provider = oci.${content.id}
-    compartment_id = "${content.tenancy_ocid}"
+    provider = oci.${content.provider}
+    compartment_id = "${local.oci_credentials[index(local.oci_credentials.*.id, "${content.provider}")].tenancy_ocid}"
 }
 
 resource "oci_objectstorage_bucket" "config_${content.id}" {
-  provider = oci.${content.id}
+  provider = oci.${content.provider}
 
   access_type           = "NoPublicAccess"
   auto_tiering          = "InfrequentAccess"
-  compartment_id        = "${content.tenancy_ocid}"
+  compartment_id        = "${local.oci_credentials[index(local.oci_credentials.*.id, "${content.provider}")].tenancy_ocid}"
   name                  = "zelos-${content.id}"
   namespace             = data.oci_objectstorage_namespace.config_${content.id}.namespace
   object_events_enabled = "false"
@@ -106,19 +107,19 @@ generate "vnc" {
   path      = "generated.vnc.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-%{for key, content in local.oci_credentials}
+%{for key, content in local.instances}
 module "vnc-${content.id}" {
   source = "jakoberpf/base-vpc/oracle"
   providers = {
-    oci = oci.${content.id}
+    oci = oci.${content.provider}
   }
 
   name                 = "zelos"
   compartment_id       = oci_identity_compartment.compartment-${content.id}.id
   availability_domains = [
-    "${content.availability_domains[0]}",
-    "${content.availability_domains[1]}",
-    "${content.availability_domains[2]}"
+    "${local.oci_credentials[index(local.oci_credentials.*.id, "${content.provider}")].availability_domains[0]}",
+    "${local.oci_credentials[index(local.oci_credentials.*.id, "${content.provider}")].availability_domains[1]}",
+    "${local.oci_credentials[index(local.oci_credentials.*.id, "${content.provider}")].availability_domains[2]}"
   ]
   vcn_cidr_block = "10.${key + 1}0.0.0/16"
 }
@@ -131,17 +132,17 @@ generate "peering" {
   path      = "generated.peering.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-%{for requestor in local.oci_credentials}%{for acceptor in requestor.peers}
+%{for requestor in local.instances}%{for acceptor in requestor.peers}
 module "peering-${requestor.id}-${acceptor}" {
   source = "jakoberpf/peering-local/oracle"
   providers = {
-    oci.requestor = oci.${requestor.id}
+    oci.requestor = oci.${requestor.provider}
     oci.acceptor = oci.${acceptor}
   }
 
   requestor_id = "${requestor.id}"
   requestor_compartment_ocid = oci_identity_compartment.compartment-${requestor.id}.id
-  requestor_root_compartment_ocid = "${requestor.tenancy_ocid}"
+  requestor_root_compartment_ocid = "${local.oci_credentials[index(local.oci_credentials.*.id, "${requestor.id}")].tenancy_ocid}"
   requestor_vnc_ocid = module.vnc-${requestor.id}.vcn_id
   requestor_route_table_id = module.vnc-${requestor.id}.route_table_id
   acceptor_id = "${acceptor}"
@@ -169,12 +170,12 @@ generate "nodes" {
   path      = "generated.nodes.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-%{for tenancy in local.oci_credentials}
+%{for tenancy in local.instances}
 module "node-${tenancy.id}" {
   source = "jakoberpf/kubernetes-node/oracle"
-  version = "0.0.8"
+  version = "${tenancy.custom.module_version}"
   providers = {
-    oci = oci.${tenancy.id}
+    oci = oci.${tenancy.provider}
   }
 
   name                            = "zelos"
@@ -182,12 +183,12 @@ module "node-${tenancy.id}" {
   vcn_id                          = module.vnc-${tenancy.id}.vcn_id
   compartment_id                  = oci_identity_compartment.compartment-${tenancy.id}.id
   subnet_id                       = module.vnc-${tenancy.id}.public_subnet_ids[${tenancy.availability_domains_placement - 1}]
-  availability_domain             = "${tenancy.availability_domains[tenancy.availability_domains_placement - 1]}"
+  availability_domain             = "${local.oci_credentials[index(local.oci_credentials.*.id, "${tenancy.id}")].availability_domains[tenancy.availability_domains_placement - 1]}"
   ssh_authorized_keys             = "${local.ssh.public_key}"
 
-  instance_ocpus = 4
-  instance_memory = 24
-  boot_volume_size_in_gbs = 200
+  instance_ocpus = ${tenancy.custom.cpu}
+  instance_memory = ${tenancy.custom.memory}
+  boot_volume_size_in_gbs =  ${tenancy.custom.volume}
 
   security_group_ports_kubernetes = {
     "LOCAL_DNS_CACHE_TCP" = {
@@ -285,11 +286,11 @@ resource "cloudflare_record" "endpoint" {
   ttl      = 60
 }
 
-%{for tenancy in local.oci_credentials}
-resource "cloudflare_record" "node-${tenancy.id}" {
+%{for instance in local.instances}
+resource "cloudflare_record" "node-${instance.id}" {
   zone_id  = "${local.cloudflare_credentials.zone_id}"
-  name     = "${tenancy.id}.nodes.blue.zelos.k8s.erpf.de"
-  value    = module.node-${tenancy.id}.public_ip
+  name     = "${instance.id}.nodes.blue.zelos.k8s.erpf.de"
+  value    = module.node-${instance.id}.public_ip
   type     = "A"
   proxied  = false
   ttl      = 300
@@ -305,34 +306,34 @@ generate "inventory" {
   contents  = <<EOF
 resource "local_file" "inventory" {
   depends_on = [
-    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+    %{for tenancy in local.instances}module.node-${tenancy.id}.public_ip,%{endfor}
   ]
   content = templatefile("templates/inventory.tpl",
     {
       masters-ip-public = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "master"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
       ]
       masters-ip-private = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "master"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
       ]
       masters-id = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}"node-${tenancy.id}",%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "master"}"node-${tenancy.id}",%{endif}%{endfor}
       ],
       masters-user = [
-        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
+        %{for tenancy in local.instances}"ubuntu",%{endfor}
       ]
 
       workers-ip-public = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
       ]
       workers-ip-private = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
       ]
       workers-id = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}"node-${tenancy.id}",%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}"node-${tenancy.id}",%{endif}%{endfor}
       ],
       workers-user = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}"ubuntu",%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}"ubuntu",%{endif}%{endfor}
       ]
     }
 
@@ -349,18 +350,18 @@ generate "ssh" {
   contents  = <<EOF
 resource "local_file" "ssh" {
   depends_on = [
-    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+    %{for tenancy in local.instances}module.node-${tenancy.id}.public_ip,%{endfor}
   ]
   content = templatefile("templates/config.tpl",
   {
     node-ip = [
-        %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+        %{for tenancy in local.instances}module.node-${tenancy.id}.public_ip,%{endfor}
     ]
     node-id = [
-        %{for tenancy in local.oci_credentials}"node-${tenancy.id}",%{endfor}
+        %{for tenancy in local.instances}"node-${tenancy.id}",%{endfor}
     ],
     node-user = [
-        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
+        %{for tenancy in local.instances}"ubuntu",%{endfor}
     ],
     node-key = "${get_terragrunt_dir()}/../../.ssh/automation"
   }
