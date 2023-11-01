@@ -6,17 +6,12 @@ ${id} ansible_host=${masters-ip-public[index]} ansible_user=${masters-user[index
 ${id} ansible_host=${workers-ip-public[index]} ansible_user=${workers-user[index]} ip=${workers-ip-private[index]}
 %{ endfor ~}
 
-[kube-master]
+[k3s_master]
 %{ for index, id in masters-id ~}
 ${id}
 %{ endfor ~}
 
-[etcd]
-%{ for index, id in masters-id ~}
-${id}
-%{ endfor ~}
-
-[kube-node]
+[k3s_node]
 %{ for index, id in masters-id ~}
 ${id}
 %{ endfor ~}
@@ -24,9 +19,6 @@ ${id}
 ${id}
 %{ endfor ~}
 
-[calico_rr]
-
-[k8s-cluster:children]
-kube-master
-kube-node
-calico_rr
+[k3s_cluster:children]
+k3s_master
+k3s_node
