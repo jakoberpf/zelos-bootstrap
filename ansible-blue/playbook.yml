@@ -1,7 +1,0 @@
-- name: My first play
-  hosts: all
-  roles:
-    - role: '/Users/jakoberpf/Code/jakoberpf/ansible/roles/kubernetes/k3s'
-  tasks:
-    - name: Ping my hosts
-      ansible.builtin.ping:
