@@ -1,4 +1,4 @@
-name: 'Deploy'
+name: 'Deploy Blue and Green Environment'
 
 on:
   workflow_dispatch:
@@ -7,10 +7,7 @@ on:
       - main
       - add-semi-blue-green-deployments
 
-env:
-  tf_version: '1.1.8'
-  tg_version: '0.36.3'
-  tf_working_dir: './terraform'
+permissions: write-all
 
 jobs:
   terragrunt:
