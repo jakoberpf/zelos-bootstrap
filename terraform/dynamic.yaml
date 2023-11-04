@@ -1,3 +1,7 @@
-dns:
-  apiNode: node-jakob
-  ingressNode: node-jakob
+# dns:
+#   apiNode: jakob
+#   ingressNode: jakob
+# migration:
+#   source: green
+#   target: blue
+#   backup: blue
