@@ -48,12 +48,12 @@ jobs:
       - name: 'Setup terragrunt'
         uses: autero1/action-terragrunt@v1.2.0
         with:
-          terragrunt_version: ${{ env.tg_version }}
+          terragrunt_version: 0.36.3
 
       - name: 'Setup terraform'
         uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.tf_version }}
+        # with:
+        #   terraform_version: ${{ env.tf_version }}
 
       # - name: Get cached terraform generated ssh config
       #   uses: actions/cache@v3
