@@ -1,7 +1,7 @@
 - name: My first play
   hosts: all
   roles:
-    - { role: '/Users/jakoberpf/Code/jakoberpf/ansible/roles/kubernetes/k3s', become: yes }
+    - { role: jakoberpf.k3s, become: yes }
   tasks:
     - name: Allow tpc connections on multiple ports
       ansible.builtin.iptables:
