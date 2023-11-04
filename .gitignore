@@ -14,8 +14,7 @@ crash.log
 *backend.conf
 
 # Ignore secret configuration files
-terraform/terragrunt.yaml
-kubespray/kubespray.yaml
+terraform/**/terragrunt.yaml
 
 # Ignore override files as they are usually used to override resources locally and so
 # are not checked in
@@ -40,7 +39,6 @@ override.tf.json
 *.ssh
 *.oci
 *.pem
-*.kubespray
 */inventory.ini
 /.idea
 /velero/credentials-velero
