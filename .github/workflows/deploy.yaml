@@ -53,36 +53,6 @@ jobs:
       - name: 'Setup terraform'
         uses: hashicorp/setup-terraform@v2
 
-      # - name: Get cached terraform generated ssh config
-      #   uses: actions/cache@v3
-      #   env:
-      #     cache-name: cache-terraform-generated-ssh-config
-      #   with:
-      #     path: .ssh/config
-      #     key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ env.cache-name }}
-
-      # - name: Get cached terraform generated files
-      #   uses: actions/cache@v3
-      #   env:
-      #     cache-name: cache-terraform-generated
-      #   with:
-      #     path: bin/generated
-      #     key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ env.cache-name }}
-
-      # - name: 'Get cached terraform generated ansible inventory'
-      #   uses: actions/cache@v3
-      #   env:
-      #     cache-name: cache-terraform-ansible-inventory
-      #   with:
-      #     path: ansible/inventory.ini
-      #     key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ env.cache-name }}
-
       - name: 'Terragrunt init'
         run: |
           ./bin/terraform-init.sh blue
@@ -104,6 +74,14 @@ jobs:
       #     ./bin/generated/peering.sh
       #   env:
       #     OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
+
+      - name: Cached terraform generated files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-blue-generated
+        with:
+          path: terraform/blue/generated
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
 
   ansible:
     name: 'Ansible'
@@ -138,12 +116,12 @@ jobs:
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
-      - name: 'Get cached terraform generated ansible inventory'
+      - name: Get cached terraform generated files
         uses: actions/cache@v3
         env:
-          cache-name: cache-terraform-ansible-inventory
+          cache-name: cache-terraform-blue-generated
         with:
-          path: ansible/inventory.ini
+          path: terraform/blue/generated
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}
