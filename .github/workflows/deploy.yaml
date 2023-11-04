@@ -7,13 +7,14 @@ on:
       - main
       - add-semi-blue-green-deployments
 
-permissions: write-all
-
 jobs:
   terragrunt:
     name: 'Terragrunt'
     runs-on: ubuntu-latest
     concurrency: terragrunt
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v1
@@ -36,7 +37,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::433082585283:role/github-oidc-terraform
           role-session-name: kubernetes-cluster-zelos-bootstrap
-          aws-region: "eu-central-1" # ${{ env.AWS_REGION }}
+          aws-region: "eu-central-1"
 
       - name: 'Decrypt secrets'
         run: |
