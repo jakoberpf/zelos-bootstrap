@@ -33,7 +33,7 @@ jobs:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
       - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::433082585283:role/github-oidc-terraform
           role-session-name: kubernetes-cluster-zelos-bootstrap
