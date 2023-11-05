@@ -39,6 +39,7 @@ override.tf.json
 *.ssh
 *.oci
 *.pem
-*/inventory.ini
-/.idea
-/velero/credentials-velero
+*inventory.ini
+
+.idea
+velero/credentials-velero
