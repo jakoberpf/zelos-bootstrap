@@ -9,4 +9,4 @@ cd $GIT_ROOT
 cp terraform/$1/generated/inventory.ini ansible/inventory/$1/inventory.ini
 
 # Run ansible playbook
-ansible-playbook ansible/playbook.yml -i ansible/inventory/$1/inventory.ini
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ansible/playbook.yml -i ansible/inventory/$1/inventory.ini
