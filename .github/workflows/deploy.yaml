@@ -40,8 +40,8 @@ jobs:
 
       - name: 'Decrypt secrets'
         run: |
-          bash bin/secrets-decrypt.sh blue
-          bash bin/secrets-setup-keys.sh
+          ./bin/secrets-decrypt.sh blue
+          ./bin/secrets-setup-keys.sh blue
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
