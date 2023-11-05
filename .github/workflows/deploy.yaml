@@ -53,6 +53,16 @@ jobs:
       - name: 'Setup terraform'
         uses: hashicorp/setup-terraform@v2
 
+      - name: Get cached terraform generated files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-blue-generated
+        with:
+          path: terraform/blue/generated
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
+
       - name: 'Terragrunt init'
         run: |
           ./bin/terraform-init.sh blue
@@ -129,7 +139,7 @@ jobs:
       - name: 'Decrypt secrets'
         run: |
           ./bin/secrets-decrypt.sh blue
-          ./bin/secrets-setup-keys.sh
+          ./bin/secrets-setup-keys.sh blue
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
