@@ -40,7 +40,7 @@ jobs:
 
       - name: 'Decrypt secrets'
         run: |
-          ./bin/secrets-decrypt.sh
+          ./bin/secrets-decrypt.sh blue
           ./bin/secrets-setup-keys.sh
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
@@ -128,7 +128,7 @@ jobs:
 
       - name: 'Decrypt secrets'
         run: |
-          ./bin/secrets-decrypt.sh
+          ./bin/secrets-decrypt.sh blue
           ./bin/secrets-setup-keys.sh
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
