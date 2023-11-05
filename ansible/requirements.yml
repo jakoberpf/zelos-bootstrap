@@ -1,4 +1,4 @@
----
+--- # https://docs.ansible.com/ansible/latest/galaxy/user_guide.html#installing-roles
 roles:
   # Install a role from Ansible Galaxy.
   - name: jakoberpf.k3s
