@@ -1,3 +1,5 @@
+cluster_env: blue
+
 ansible_port: 2222
 ansible_ssh_private_key_file: ".ssh/automation"
 

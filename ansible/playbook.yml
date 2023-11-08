@@ -35,3 +35,10 @@
     #     flush: true
     # - name: "[DEBUG] Save empty ruleset to disk so it will be reloaded on reboot"
     #   ansible.builtin.command: netfilter-persistent save
+    - name: Fetch /etc/rancher/k3s/k3s.yaml
+      ansible.builtin.fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: artifacts/k3s-{{ cluster_env }}.yaml
+        flat: yes
+      become: true
+      run_once: true
