@@ -1,11 +1,11 @@
 locals {
   vars_yaml              = yamldecode(file("terragrunt.yaml"))
   ssh                    = local.vars_yaml.ssh
+  instances              = local.vars_yaml.instances
   oci_credentials        = local.vars_yaml.oci
-  strato_credentials     = local.vars_yaml.strato
   cloudflare_credentials = local.vars_yaml.cloudflare
   terraform              = local.vars_yaml.terraform
-  vars_dynamic_yaml      = yamldecode(file("dynamic.yaml"))
+  /* vars_dynamic_yaml      = yamldecode(file("dynamic.yaml")) */
 }
 
 generate "backend" {
@@ -153,12 +153,12 @@ module "peering-${requestor.id}-${acceptor}" {
 }
 
 resource "local_file" "peering-${requestor.id}-${acceptor}-requestor" {
-  filename = "$${path.module}/../bin/generated/peering-${requestor.id}-${acceptor}-requestor.sh"
+  filename = "$${path.module}/generated/peering-${requestor.id}-${acceptor}-requestor.sh"
   content  = module.peering-${requestor.id}-${acceptor}.requestor_route_rule_script
 }
 
 resource "local_file" "peering-${requestor.id}-${acceptor}-acceptor" {
-  filename = "$${path.module}/../bin/generated/peering-${requestor.id}-${acceptor}-acceptor.sh"
+  filename = "$${path.module}/generated/peering-${requestor.id}-${acceptor}-acceptor.sh"
   content  = module.peering-${requestor.id}-${acceptor}.acceptor_route_rule_script
 }
 %{endfor}%{endfor}
@@ -293,97 +293,48 @@ resource "cloudflare_record" "node-${tenancy.id}" {
 }
 %{endfor}
 
-%{for server in local.strato_credentials}
-resource "cloudflare_record" "node-${server.id}" {
-  zone_id  = "${local.cloudflare_credentials.zone_id}"
-  name     = "${server.id}.nodes.zelos.k8s.erpf.de"
-  value    = "${server.ip}"
-  type     = "A"
-  proxied  = false
-  ttl      = 300
-}
-%{endfor}
-
 EOF
 }
 
-generate "inventory_ansible" {
-  path      = "generated.inventory.ansible.tf"
+generate "inventory" {
+  path      = "generated.inventory.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-resource "local_file" "inventory_ansible" {
+resource "local_file" "inventory" {
   depends_on = [
-    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+    %{for tenancy in local.instances}module.node-${tenancy.id}.public_ip,%{endfor}
   ]
-  content = templatefile("templates/inventory_ansible.tpl",
-    {
-      node-ip-public = [
-        %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
-        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
-      ]
-      node-ip-private = [
-        %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.private_ip,%{endfor}
-        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
-      ]
-      node-id = [
-        %{for tenancy in local.oci_credentials}"node-${tenancy.id}",%{endfor}
-        %{for server in local.strato_credentials}"${server.id}"%{endfor}
-      ],
-      node-user = [
-        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
-        %{for server in local.strato_credentials}"root"%{endfor}
-      ]
-    }
-  )
-  filename = "../ansible/inventory.ini"
-}
-
-EOF
-}
-
-generate "inventory_kubespray" {
-  path      = "generated.inventory.kubespray.tf"
-  if_exists = "overwrite_terragrunt"
-  contents  = <<EOF
-resource "local_file" "inventory_kubespray" {
-  depends_on = [
-    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
-  ]
-  content = templatefile("templates/inventory_kubespray.tpl",
+  content = templatefile("templates/inventory.tpl",
     {
       masters-ip-public = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "master"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
       ]
       masters-ip-private = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "master"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
       ]
       masters-id = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "master"}"node-${tenancy.id}",%{endif}%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "master"}"node-${tenancy.id}",%{endif}%{endfor}
       ],
       masters-user = [
-        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
+        %{for tenancy in local.instances}"ubuntu",%{endfor}
       ]
 
       workers-ip-public = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
-        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}module.node-${tenancy.id}.public_ip,%{endif}%{endfor}
       ]
       workers-ip-private = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
-        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}module.node-${tenancy.id}.private_ip,%{endif}%{endfor}
       ]
       workers-id = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}"node-${tenancy.id}",%{endif}%{endfor}
-        %{for server in local.strato_credentials}"${server.id}"%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}"node-${tenancy.id}",%{endif}%{endfor}
       ],
       workers-user = [
-        %{for tenancy in local.oci_credentials}%{if tenancy.role == "worker"}"ubuntu",%{endif}%{endfor}
-        %{for server in local.strato_credentials}"root"%{endfor}
+        %{for tenancy in local.instances}%{if tenancy.role == "worker"}"ubuntu",%{endif}%{endfor}
       ]
     }
 
   )
-  filename = "../kubespray/inventory.ini"
+  filename = "$${path.module}/generated/inventory.ini"
 }
 
 EOF
@@ -395,26 +346,23 @@ generate "ssh" {
   contents  = <<EOF
 resource "local_file" "ssh" {
   depends_on = [
-    %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
+    %{for tenancy in local.instances}module.node-${tenancy.id}.public_ip,%{endfor}
   ]
   content = templatefile("templates/config.tpl",
   {
     node-ip = [
-        %{for tenancy in local.oci_credentials}module.node-${tenancy.id}.public_ip,%{endfor}
-        %{for server in local.strato_credentials}"${server.ip}"%{endfor}
+        %{for tenancy in local.instances}module.node-${tenancy.id}.public_ip,%{endfor}
     ]
     node-id = [
-        %{for tenancy in local.oci_credentials}"node-${tenancy.id}",%{endfor}
-        %{for server in local.strato_credentials}"${server.id}"%{endfor}
+        %{for tenancy in local.instances}"node-${tenancy.id}",%{endfor}
     ],
     node-user = [
-        %{for tenancy in local.oci_credentials}"ubuntu",%{endfor}
-        %{for server in local.strato_credentials}"root"%{endfor}
+        %{for tenancy in local.instances}"ubuntu",%{endfor}
     ],
-    node-key = "${get_terragrunt_dir()}/../.ssh/automation"
+    node-key = "${get_terragrunt_dir()}/../../.ssh/automation"
   }
  )
- filename = "../.ssh/config"
+ filename = "$${path.module}/generated/config"
 }
 
 EOF
