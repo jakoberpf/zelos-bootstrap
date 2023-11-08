@@ -40,6 +40,7 @@ override.tf.json
 *.oci
 *.pem
 *inventory.ini
+**/generated
 
 .idea
 velero/credentials-velero
