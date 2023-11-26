@@ -1,4 +1,4 @@
-name: 'Deploy Blue and Green Environment'
+name: 'Deploy Blue Environment'
 
 on:
   workflow_dispatch:
