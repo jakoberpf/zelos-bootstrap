@@ -35,7 +35,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::433082585283:role/github-oidc-terraform
-          role-session-name: kubernetes-cluster-zelos-bootstrap
+          role-session-name: kubernetes-cluster-zelos-bootstrap-blue
           aws-region: "eu-central-1"
 
       - name: 'Decrypt secrets'
@@ -152,79 +152,6 @@ jobs:
       - name: 'Ansible deploy'
         run: |
           ./bin/ansible-playbook.sh blue
-
-  # kubespray:
-  #   name: 'Kubespray'
-  #   runs-on: ubuntu-latest
-  #   concurrency: kubespray
-  #   needs: 
-  #     - tooling
-  #     - ansible
-  #     - terragrunt
-  #   steps:
-  #     - name: 'Checkout'
-  #       uses: actions/checkout@v1
-
-  #     - name: Get cached .venv
-  #       uses: actions/cache@v3
-  #       env:
-  #         cache-name: cache-tooling-venv
-  #       with:
-  #         path: .venv
-  #         key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-${{ env.cache-name }}
-
-  #     - name: 'Get cached terraform generated kubespray inventory'
-  #       uses: actions/cache@v3
-  #       env:
-  #         cache-name: cache-terraform-kubespray-inventory
-  #       with:
-  #         path: kubespray/inventory.ini
-  #         key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-${{ env.cache-name }}
-
-  #     - name: 'Install sops'
-  #       run: |
-  #         curl -O -L -C - https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux
-  #         sudo mv sops-v3.7.3.linux /usr/bin/sops
-  #         sudo chmod +x /usr/bin/sops
-
-  #     - name: 'Install age'
-  #       run: |
-  #         curl -O -L -C - https://github.com/FiloSottile/age/releases/download/v1.0.0/age-v1.0.0-linux-amd64.tar.gz
-  #         tar -zxvf age-v1.0.0-linux-amd64.tar.gz
-  #         sudo mv age/age /usr/bin/age
-  #         sudo chmod +x /usr/bin/age
-
-  #     - name: 'Install oci-cli'
-  #       run: |
-  #         curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-  #         chmod +x install.sh
-  #         ./install.sh --accept-all-defaults
-  #         echo "::add-path::/home/runner/bin"
-  #         exec -l $SHELL
-  #       env:
-  #         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-
-  #     - name: 'Decrypt secrets'
-  #       run: |
-  #         ./bin/secrets-decrypt.sh
-  #         ./bin/secrets-setup.sh
-  #       env:
-  #         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-
-  #     - name: 'Kubespray deploy'
-  #       run: |
-  #         make kubespray.clone
-  #         cat kubespray/inventory.ini
-  #         ./bin/kubespray-deploy.sh
-
-  #     - name: 'Kubespray post'
-  #       run: |
-  #         ./bin/kubespray-post.sh
-  #       env:
-  #         OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
+          ./bin/export-kubeconfig.sh blue
 
 # TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
