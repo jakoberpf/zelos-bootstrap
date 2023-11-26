@@ -79,19 +79,11 @@ jobs:
         run: |
           ./bin/terraform-apply.sh blue --loop
 
-      # - name: 'Terragrunt post'
-      #   run: |
-      #     ./bin/generated/peering.sh
-      #   env:
-      #     OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
-
-      - name: Cached terraform generated files
-        uses: actions/cache@v3
+      - name: 'Terragrunt post'
+        run: |
+          ./bin/run-peering-scripts.sh blue 
         env:
-          cache-name: cache-terraform-blue-generated
-        with:
-          path: terraform/blue/generated
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
   ansible:
     name: 'Ansible'
