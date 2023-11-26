@@ -1,0 +1,149 @@
+name: 'Deploy Green Environment'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - add-semi-blue-green-deployments
+
+permissions: write-all
+
+jobs:
+  terragrunt:
+    name: 'Terragrunt'
+    runs-on: ubuntu-latest
+    concurrency: terragrunt
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v1
+
+      - name: Setup SOPS with binary installer
+        uses: mdgreenwald/mozilla-sops-action@v1.4.1
+
+      - name: 'Install oci-cli'
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "::add-path::/home/runner/bin"
+          exec -l $SHELL
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::433082585283:role/github-oidc-terraform
+          role-session-name: kubernetes-cluster-zelos-bootstrap-green
+          aws-region: "eu-central-1"
+
+      - name: 'Decrypt secrets'
+        run: |
+          ./bin/secrets-decrypt.sh green
+          ./bin/secrets-setup-keys.sh green
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+      - name: 'Setup terragrunt'
+        uses: autero1/action-terragrunt@v1.2.0
+        with:
+          terragrunt_version: 0.36.3
+
+      - name: 'Setup terraform'
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Get cached terraform generated files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-green-generated
+        with:
+          path: terraform/green/generated
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: 'Terragrunt init'
+        run: |
+          ./bin/terraform-init.sh green
+
+      - name: 'Terragrunt validate'
+        run: |
+          ./bin/terraform-validate.sh green
+
+      - name: 'Terragrunt plan'
+        run: |
+         ./bin/terraform-plan.sh green
+
+      - name: 'Terragrunt apply (with force)'
+        run: |
+          ./bin/terraform-apply.sh green --loop
+
+      - name: 'Terragrunt post'
+        run: |
+          ./bin/run-peering-scripts.sh green 
+        env:
+          OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
+
+  # ansible:
+  #   name: 'Ansible'
+  #   runs-on: ubuntu-latest
+  #   concurrency: ansible
+  #   needs: 
+  #     - terragrunt
+  #   steps:
+  #     - name: 'Checkout'
+  #       uses: actions/checkout@v1
+
+  #     - name: 'Install sops'
+  #       run: |
+  #         curl -O -L -C - https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux
+  #         sudo mv sops-v3.7.3.linux /usr/bin/sops
+  #         sudo chmod +x /usr/bin/sops
+
+  #     - name: 'Install age'
+  #       run: |
+  #         curl -O -L -C - https://github.com/FiloSottile/age/releases/download/v1.0.0/age-v1.0.0-linux-amd64.tar.gz
+  #         tar -zxvf age-v1.0.0-linux-amd64.tar.gz
+  #         sudo mv age/age /usr/bin/age
+  #         sudo chmod +x /usr/bin/age
+
+  #     - name: 'Install oci-cli'
+  #       run: |
+  #         curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+  #         chmod +x install.sh
+  #         ./install.sh --accept-all-defaults
+  #         echo "::add-path::/home/runner/bin"
+  #         exec -l $SHELL
+  #       env:
+  #         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+  #     - name: Get cached terraform generated files
+  #       uses: actions/cache@v3
+  #       env:
+  #         cache-name: cache-terraform-green-generated
+  #       with:
+  #         path: terraform/green/generated
+  #         key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-${{ env.cache-name }}
+
+  #     - name: 'Decrypt secrets'
+  #       run: |
+  #         ./bin/secrets-decrypt.sh green
+  #         ./bin/secrets-setup-keys.sh green
+  #       env:
+  #         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+
+  #     - name: Install ansible and dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         if [ -f ansible/requirements.txt ]; then pip install -r ansible/requirements.txt; fi
+  #         if [ -f ansible/requirements.yml ]; then ansible-galaxy install -r ansible/requirements.yml --force; fi
+
+  #     - name: 'Ansible deploy'
+  #       run: |
+  #         ./bin/ansible-playbook.sh green
+  #       # ./bin/export-kubeconfig.sh green
+
+# TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
