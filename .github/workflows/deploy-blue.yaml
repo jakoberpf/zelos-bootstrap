@@ -152,6 +152,6 @@ jobs:
       - name: 'Ansible deploy'
         run: |
           ./bin/ansible-playbook.sh blue
-          ./bin/export-kubeconfig.sh blue
+        # ./bin/export-kubeconfig.sh blue
 
 # TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
