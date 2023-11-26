@@ -85,65 +85,65 @@ jobs:
         env:
           OCI_CLI_CONFIG_FILE: ${{ github.workspace }}/.oci/config
 
-  # ansible:
-  #   name: 'Ansible'
-  #   runs-on: ubuntu-latest
-  #   concurrency: ansible
-  #   needs: 
-  #     - terragrunt
-  #   steps:
-  #     - name: 'Checkout'
-  #       uses: actions/checkout@v1
+  ansible:
+    name: 'Ansible'
+    runs-on: ubuntu-latest
+    concurrency: ansible
+    needs: 
+      - terragrunt
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v1
 
-  #     - name: 'Install sops'
-  #       run: |
-  #         curl -O -L -C - https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux
-  #         sudo mv sops-v3.7.3.linux /usr/bin/sops
-  #         sudo chmod +x /usr/bin/sops
+      - name: 'Install sops'
+        run: |
+          curl -O -L -C - https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux
+          sudo mv sops-v3.7.3.linux /usr/bin/sops
+          sudo chmod +x /usr/bin/sops
 
-  #     - name: 'Install age'
-  #       run: |
-  #         curl -O -L -C - https://github.com/FiloSottile/age/releases/download/v1.0.0/age-v1.0.0-linux-amd64.tar.gz
-  #         tar -zxvf age-v1.0.0-linux-amd64.tar.gz
-  #         sudo mv age/age /usr/bin/age
-  #         sudo chmod +x /usr/bin/age
+      - name: 'Install age'
+        run: |
+          curl -O -L -C - https://github.com/FiloSottile/age/releases/download/v1.0.0/age-v1.0.0-linux-amd64.tar.gz
+          tar -zxvf age-v1.0.0-linux-amd64.tar.gz
+          sudo mv age/age /usr/bin/age
+          sudo chmod +x /usr/bin/age
 
-  #     - name: 'Install oci-cli'
-  #       run: |
-  #         curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-  #         chmod +x install.sh
-  #         ./install.sh --accept-all-defaults
-  #         echo "::add-path::/home/runner/bin"
-  #         exec -l $SHELL
-  #       env:
-  #         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      - name: 'Install oci-cli'
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "::add-path::/home/runner/bin"
+          exec -l $SHELL
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
-  #     - name: Get cached terraform generated files
-  #       uses: actions/cache@v3
-  #       env:
-  #         cache-name: cache-terraform-green-generated
-  #       with:
-  #         path: terraform/green/generated
-  #         key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-${{ env.cache-name }}
+      - name: Get cached terraform generated files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-terraform-green-generated
+        with:
+          path: terraform/green/generated
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
 
-  #     - name: 'Decrypt secrets'
-  #       run: |
-  #         ./bin/secrets-decrypt.sh green
-  #         ./bin/secrets-setup-keys.sh green
-  #       env:
-  #         SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+      - name: 'Decrypt secrets'
+        run: |
+          ./bin/secrets-decrypt.sh green
+          ./bin/secrets-setup-keys.sh green
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
-  #     - name: Install ansible and dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         if [ -f ansible/requirements.txt ]; then pip install -r ansible/requirements.txt; fi
-  #         if [ -f ansible/requirements.yml ]; then ansible-galaxy install -r ansible/requirements.yml --force; fi
+      - name: Install ansible and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f ansible/requirements.txt ]; then pip install -r ansible/requirements.txt; fi
+          if [ -f ansible/requirements.yml ]; then ansible-galaxy install -r ansible/requirements.yml --force; fi
 
-  #     - name: 'Ansible deploy'
-  #       run: |
-  #         ./bin/ansible-playbook.sh green
-  #       # ./bin/export-kubeconfig.sh green
+      - name: 'Ansible deploy'
+        run: |
+          ./bin/ansible-playbook.sh green
+        # ./bin/export-kubeconfig.sh green
 
 # TODO trigger zelos-installer action: https://blog.marcnuri.com/triggering-github-actions-across-different-repositories
