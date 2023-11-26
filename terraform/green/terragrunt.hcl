@@ -87,7 +87,7 @@ resource "oci_objectstorage_bucket" "config_${content.id}" {
   access_type           = "NoPublicAccess"
   auto_tiering          = "InfrequentAccess"
   compartment_id        = "${local.oci_credentials[index(local.oci_credentials.*.id, "${content.provider}")].tenancy_ocid}"
-  name                  = "zelos"
+  name                  = "zelos-${content.id}"
   namespace             = data.oci_objectstorage_namespace.config_${content.id}.namespace
   object_events_enabled = "false"
   storage_tier          = "Standard"
@@ -279,7 +279,7 @@ generate "dns" {
   contents  = <<EOF
 resource "cloudflare_record" "endpoint" {
   zone_id  = "${local.cloudflare_credentials.zone_id}"
-  name     = "*.zelos.k8s.erpf.de"
+  name     = "*.green.zelos.k8s.erpf.de"
   value    = module.node-fabian.public_ip
   type     = "A"
   proxied  = false
@@ -289,7 +289,7 @@ resource "cloudflare_record" "endpoint" {
 %{for instance in local.instances}
 resource "cloudflare_record" "node-${instance.id}" {
   zone_id  = "${local.cloudflare_credentials.zone_id}"
-  name     = "${instance.id}.nodes.zelos.k8s.erpf.de"
+  name     = "${instance.id}.nodes.green.zelos.k8s.erpf.de"
   value    = module.node-${instance.id}.public_ip
   type     = "A"
   proxied  = false
