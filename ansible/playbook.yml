@@ -1,8 +1,15 @@
 - name: Configure Kubernetes Cluster and Host Instances
   hosts: all
-  roles:
-    - { role: jakoberpf.k3s, become: yes }
-  tasks:
+  pre_tasks:
+    # - name: Update hosts file
+    #   ansible.builtin.lineinfile:
+    #     dest: /etc/hosts
+    #     regexp: '.*{{ item }}$'
+    #     line: '{{ hostvars[item].ansible_host }} {{ item }}'
+    #     state: present
+    #   when: hostvars[item].ansible_host is defined
+    #   with_items: '{{ groups["all"] }}'
+    #   become: true
     - name: Allow tpc connections on multiple ports
       ansible.builtin.iptables:
         chain: INPUT
@@ -29,16 +36,23 @@
     #     chain: INPUT
     #     protocol: udp
     #     destination_ports:
-    #       - 53 # local dns cache (master, worker)
-    #       - 8472 # VXLAN overlay (master, worker)
+    #       # - 53 # local dns cache (master, worker)
+    #       # - 8472 # VXLAN overlay (master, worker)
+    #       - 51820 # Wireguard
     #     jump: ACCEPT
     #     flush: true
+    #   become: true
     # - name: "[DEBUG] Save empty ruleset to disk so it will be reloaded on reboot"
     #   ansible.builtin.command: netfilter-persistent save
+  roles:
+    # - { role: githubixx.harden_linux, become: true }
+    # - { role: githubixx.ansible_role_wireguard, become: true }
+    - { role: jakoberpf.k3s, become: true }
+  post_tasks:
     - name: Fetch /etc/rancher/k3s/k3s.yaml
       ansible.builtin.fetch:
         src: /etc/rancher/k3s/k3s.yaml
         dest: artifacts/k3s-{{ cluster_env }}.yaml
-        flat: yes
+        flat: true
       become: true
       run_once: true
