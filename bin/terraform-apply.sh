@@ -2,11 +2,8 @@
 GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
-# Source python tooling
-source $GIT_ROOT/.venv/terraform/bin/activate
-
 # Run terraform apply
-cd terraform/$1
+cd $GIT_ROOT/terraform/$1
 if [[ $* == *--loop* ]]; then
   start=`date +%s`
   until terragrunt apply -auto-approve # | grep -q 'Out of host capacity'

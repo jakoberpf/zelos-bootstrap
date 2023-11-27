@@ -3,5 +3,5 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 cd $GIT_ROOT
 
 # Run terragrunt validate
-cd terraform/$1
+cd $GIT_ROOT/terraform/$1
 terragrunt validate
