@@ -1,53 +1,58 @@
-- name: Node Configuration
+- name: Configure Kubernetes Cluster and Host Instances
   hosts: all
-  serial: 1
-  vars:
-    ansible_port: 2222
-    ansible_ssh_private_key_file: "../.ssh/automation"
-  become: true
-  tasks:
-    - name: Allow tpc connections on relevant ports
+  pre_tasks:
+    # - name: Update hosts file
+    #   ansible.builtin.lineinfile:
+    #     dest: /etc/hosts
+    #     regexp: '.*{{ item }}$'
+    #     line: '{{ hostvars[item].ansible_host }} {{ item }}'
+    #     state: present
+    #   when: hostvars[item].ansible_host is defined
+    #   with_items: '{{ groups["all"] }}'
+    #   become: true
+    - name: Allow tpc connections on multiple ports
       ansible.builtin.iptables:
         chain: INPUT
         protocol: tcp
         destination_ports:
           - 22 # teleport (master, worker)
-          - 2222 # ssh (master, worker)
-          - 53 # local dns cache (master, worker)
+          - "{{ ansible_port }}" # ssh (master, worker)
+          # - 53 # local dns cache (master, worker)
           - 80 # http  (master, worker)
-          - 179 # calico (master, worker)
+          # - 179 # calico (master, worker)
           - 443 # https (master, worker)
-          - 2378 # etcd (master)
-          - 2380 # etcd (master)
-          - 4240 # cilium health checks (master, worker)
+          # - 2378 # etcd (master)
+          # - 2380 # etcd (master)
+          # - 4240 # cilium health checks (master, worker)
           - 6443 # kubernetes api server (master)
-          - 8883 # netmaker
-          - 1888 # netmaker
-          - 10250 # kubelet (master, worker)
+          # - 8883 # netmaker
+          # - 1888 # netmaker
+          # - 10250 # kubelet (master, worker)
         jump: ACCEPT
         flush: true
-    - name: Allow udp connections on relevant ports
-      ansible.builtin.iptables:
-        chain: INPUT
-        protocol: udp
-        destination_ports:
-          - 53 # local dns cache (master, worker)
-          - 8472 # VXLAN overlay (master, worker)
-        jump: ACCEPT
-        flush: yes
-    - name: "[DEBUG] Save empty ruleset to disk so it will be reloaded on reboot"
-      ansible.builtin.command: netfilter-persistent save
-    - name: Upgrade all apt packages
-      ansible.builtin.apt: upgrade=dist force_apt_get=yes
-    - name: Check if a reboot is needed for Debian and Ubuntu boxes
-      register: reboot_required_file
-      ansible.builtin.stat: path=/var/run/reboot-required get_md5=no
-    # - name: Reboot the Debian or Ubuntu server
-    #   reboot:
-    #     msg: "Reboot initiated by Ansible due to kernel updates"
-    #     connect_timeout: 5
-    #     reboot_timeout: 600
-    #     pre_reboot_delay: 0
-    #     post_reboot_delay: 30
-    #     test_command: uptime
-    #   when: reboot_required_file.stat.exists
+      become: true
+    # - name: Allow udp connections on relevant ports
+    #   ansible.builtin.iptables:
+    #     chain: INPUT
+    #     protocol: udp
+    #     destination_ports:
+    #       # - 53 # local dns cache (master, worker)
+    #       # - 8472 # VXLAN overlay (master, worker)
+    #       - 51820 # Wireguard
+    #     jump: ACCEPT
+    #     flush: true
+    #   become: true
+    # - name: "[DEBUG] Save empty ruleset to disk so it will be reloaded on reboot"
+    #   ansible.builtin.command: netfilter-persistent save
+  roles:
+    # - { role: githubixx.harden_linux, become: true }
+    # - { role: githubixx.ansible_role_wireguard, become: true }
+    - { role: jakoberpf.k3s, become: true }
+  post_tasks:
+    - name: Fetch /etc/rancher/k3s/k3s.yaml
+      ansible.builtin.fetch:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: artifacts/k3s-{{ cluster_env }}.yaml
+        flat: true
+      become: true
+      run_once: true
